@@ -383,6 +383,15 @@ if(chartEl){
   );
   const {data:{session}}=await sb.auth.getSession();
   if(!session){window.location.href='coattic-auth.html';return;}
+  
+  // SECURE ADMIN CHECK — verified against Supabase user metadata
+  // To make yourself admin: go to Supabase → Authentication → Users
+  // Click your user → Edit → Add to user_metadata: {"is_admin": true}
+  const isAdmin = session.user.user_metadata?.is_admin === true;
+  if(!isAdmin){
+    window.location.href='coattic-dashboard.html';
+    return;
+  }
   const n=session.user.user_metadata?.name||localStorage.getItem('coattic_name')||'Admin';
   const i=n.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
   
