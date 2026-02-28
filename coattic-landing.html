@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CoAttic — Where Vision Meets Execution</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+:root{
+  --black:#0A0A0A;--white:#FFFFFF;
+  --g50:#FAFAFA;--g100:#F4F4F4;--g200:#E8E8E8;--g300:#D0D0D0;
+  --g400:#A0A0A0;--g500:#6B6B6B;--g600:#444444;--g700:#2A2A2A;--g800:#1A1A1A;
+  --gold:#8B6914;--gold-lt:#C9A84C;--gold-xlt:#F5EDD6;
+  --ease:cubic-bezier(.4,0,.2,1);
+}
+body{background:var(--white);font-family:'DM Sans',sans-serif;color:var(--black);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 56px;background:rgba(255,255,255,.96);backdrop-filter:blur(24px);border-bottom:1px solid transparent;transition:border-color .3s}
+nav.scrolled{border-color:var(--g200)}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;letter-spacing:.3px;color:var(--black);text-decoration:none;display:flex;align-items:flex-start}
+.nav-logo-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);margin-top:4px;margin-left:1px}
+.nav-center{display:flex;align-items:center;gap:40px;list-style:none;position:absolute;left:50%;transform:translateX(-50%)}
+.nav-center a{font-size:13.5px;font-weight:500;color:var(--g500);text-decoration:none;transition:color .2s;letter-spacing:.1px}
+.nav-center a:hover{color:var(--black)}
+.nav-right{display:flex;align-items:center;gap:20px}
+.nav-signin{font-size:13.5px;font-weight:500;color:var(--g600);text-decoration:none;transition:color .2s}
+.nav-signin:hover{color:var(--black)}
+.nav-apply{background:var(--black);color:var(--white);padding:10px 22px;border-radius:3px;font-size:13px;font-weight:600;letter-spacing:.3px;text-decoration:none;transition:background .2s,transform .15s;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.nav-apply:hover{background:var(--g800);transform:translateY(-1px)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
+.hamburger span{width:20px;height:1.5px;background:var(--black);transition:all .3s}
+
+/* MOBILE NAV */
+.mobile-nav{position:fixed;inset:0;z-index:490;background:var(--white);padding:88px 40px 40px;display:flex;flex-direction:column;transform:translateY(-100%);transition:transform .4s var(--ease)}
+.mobile-nav.open{transform:translateY(0)}
+.mobile-nav a{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:400;color:var(--black);text-decoration:none;padding:14px 0;border-bottom:1px solid var(--g100);letter-spacing:-.3px}
+.mn-apply{margin-top:28px;background:var(--black)!important;color:var(--white)!important;text-align:center;border-radius:3px;font-family:'DM Sans',sans-serif!important;font-size:15px!important;font-weight:600!important;border-bottom:none!important;padding:18px!important}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;padding:0 56px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;z-index:0;background-image:linear-gradient(var(--g100) 1px,transparent 1px),linear-gradient(90deg,var(--g100) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%);opacity:.6}
+.hero-inner{position:relative;z-index:1;max-width:1200px;margin:0 auto;width:100%;padding:100px 0 80px;display:grid;grid-template-columns:1fr 400px;gap:80px;align-items:center}
+.hero-rule{width:36px;height:2px;background:var(--gold);margin-bottom:28px;animation:ruleGrow .8s var(--ease) both}
+@keyframes ruleGrow{from{width:0;opacity:0}to{width:36px;opacity:1}}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(52px,6vw,78px);font-weight:300;letter-spacing:-2px;color:var(--black);line-height:1.05;margin-bottom:22px;animation:fadeUp .9s var(--ease) .1s both}
+.hero-title strong{font-weight:600}
+.hero-title em{font-style:italic}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.hero-sub{font-size:16px;font-weight:400;color:var(--g500);line-height:1.85;max-width:460px;margin-bottom:40px;animation:fadeUp .9s var(--ease) .2s both}
+.hero-ctas{display:flex;align-items:center;gap:20px;animation:fadeUp .9s var(--ease) .3s both}
+.btn-primary{background:var(--black);color:var(--white);padding:13px 30px;border-radius:3px;font-size:13.5px;font-weight:600;letter-spacing:.3px;text-decoration:none;border:none;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.16);transition:background .2s,transform .2s,box-shadow .2s;display:inline-block}
+.btn-primary:hover{background:var(--g800);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.2)}
+.btn-secondary{font-size:13.5px;font-weight:500;color:var(--g500);text-decoration:none;display:flex;align-items:center;gap:8px;transition:color .2s}
+.btn-secondary:hover{color:var(--black)}
+.btn-sec-circle{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--g300);display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .2s}
+.btn-secondary:hover .btn-sec-circle{border-color:var(--black);transform:translateX(2px)}
+
+/* HERO CARD */
+.hero-right{animation:fadeUp .9s var(--ease) .25s both}
+.member-card{background:var(--white);border:1px solid var(--g200);border-radius:6px;padding:28px;box-shadow:0 16px 48px rgba(0,0,0,.08),0 2px 8px rgba(0,0,0,.04);position:relative}
+.member-card::before{content:'';position:absolute;top:0;left:28px;right:28px;height:2px;background:linear-gradient(90deg,var(--gold),transparent);border-radius:0 0 2px 2px}
+.mc-label{font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--g400);margin-bottom:18px}
+.mc-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:20px}
+.mc-avatar{width:44px;height:44px;border-radius:3px;background:var(--g100);border:1px solid var(--g200);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--g600);flex-shrink:0}
+.mc-name{font-size:14.5px;font-weight:600;color:var(--black);margin-bottom:2px}
+.mc-role-loc{font-size:12px;color:var(--g500);margin-bottom:6px}
+.mc-badge{display:inline-block;font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--gold);background:var(--gold-xlt);border:1px solid rgba(139,105,20,.15);padding:2px 7px;border-radius:2px}
+.mc-divider{height:1px;background:var(--g100);margin-bottom:18px}
+.mc-row{display:flex;justify-content:space-between;margin-bottom:10px}
+.mc-row:last-of-type{margin-bottom:0}
+.mc-lbl{font-size:11.5px;color:var(--g400);font-weight:500}
+.mc-val{font-size:12px;color:var(--g700);font-weight:600}
+.mc-headline{background:var(--g50);border:1px solid var(--g100);border-radius:3px;padding:11px 13px;font-size:12.5px;color:var(--g600);font-style:italic;line-height:1.6;margin:16px 0}
+.mc-bottom{display:flex;align-items:center;justify-content:space-between}
+.mc-readiness{font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--g400)}
+.mc-readiness strong{color:var(--black)}
+.mc-shortlist-btn{background:var(--black);color:var(--white);padding:7px 16px;border-radius:2px;font-size:11.5px;font-weight:600;letter-spacing:.3px;border:none;cursor:pointer;transition:background .2s}
+.mc-shortlist-btn:hover{background:var(--g800)}
+.mc-lock{display:flex;align-items:flex-start;gap:8px;font-size:11.5px;color:var(--g400);background:var(--g50);border:1px solid var(--g100);border-radius:3px;padding:8px 11px;margin-top:12px;line-height:1.55}
+
+/* STATS */
+.stats-row{border-top:1px solid var(--g100);border-bottom:1px solid var(--g100);padding:36px 56px;display:flex;justify-content:center}
+.stat-item{flex:1;max-width:220px;text-align:center;padding:0 32px;position:relative}
+.stat-item+.stat-item::before{content:'';position:absolute;left:0;top:15%;bottom:15%;width:1px;background:var(--g200)}
+.stat-number{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:300;color:var(--black);letter-spacing:-1px;line-height:1;margin-bottom:6px}
+.stat-label{font-size:12px;color:var(--g400);font-weight:500;letter-spacing:.3px}
+
+/* WHO */
+.who-section{padding:96px 56px;background:var(--g50);border-top:1px solid var(--g100);border-bottom:1px solid var(--g100)}
+.who-inner{max-width:1200px;margin:0 auto}
+.sec-eyebrow{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.sec-eyebrow::after{content:'';flex:0 0 20px;height:1px;background:var(--gold-lt)}
+.sec-title{font-family:'Cormorant Garamond',serif;font-size:clamp(34px,4vw,50px);font-weight:300;color:var(--black);letter-spacing:-1px;line-height:1.15;margin-bottom:48px}
+.sec-title strong{font-weight:600}
+.sec-title em{font-style:italic}
+.who-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--g200);border:1px solid var(--g200)}
+.who-block{background:var(--white);padding:36px 28px;transition:background .2s}
+.who-block:hover{background:var(--g50)}
+.who-num{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:2px;color:var(--g300);margin-bottom:20px}
+.who-type{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;color:var(--black);margin-bottom:10px;letter-spacing:-.3px}
+.who-desc{font-size:13px;color:var(--g500);line-height:1.75}
+
+/* HOW */
+.how-section{padding:96px 56px}
+.how-inner{max-width:1200px;margin:0 auto}
+.how-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:60px}
+.how-note{font-size:13px;color:var(--g400);max-width:260px;line-height:1.75;text-align:right}
+.how-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:48px;position:relative}
+.how-steps::before{content:'';position:absolute;top:26px;left:calc(16.5% + 28px);right:calc(16.5% + 28px);height:1px;background:var(--g200);z-index:0}
+.how-step{position:relative;z-index:1}
+.how-step-num{width:52px;height:52px;border-radius:3px;border:1px solid var(--g200);background:var(--white);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--black);margin-bottom:22px;transition:border-color .2s,box-shadow .2s}
+.how-step:hover .how-step-num{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-xlt)}
+.how-step-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--black);margin-bottom:10px;letter-spacing:-.2px}
+.how-step-desc{font-size:13px;color:var(--g500);line-height:1.8}
+
+/* PRINCIPLES */
+.principles-section{padding:96px 56px;background:var(--black)}
+.principles-inner{max-width:1200px;margin:0 auto}
+.p-header{margin-bottom:56px}
+.p-header .sec-eyebrow{color:var(--gold-lt)}
+.p-header .sec-eyebrow::after{background:var(--gold-lt)}
+.p-header .sec-title{color:var(--white)}
+.principles-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--g800)}
+.principle{background:var(--black);padding:40px;transition:background .2s}
+.principle:hover{background:var(--g800)}
+.p-num{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:2px;color:var(--g600);margin-bottom:18px}
+.p-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--white);margin-bottom:10px;letter-spacing:-.2px}
+.p-desc{font-size:13px;color:var(--g500);line-height:1.8}
+
+/* CONNECTIONS */
+.connections-section{padding:80px 56px;border-top:1px solid var(--g100);border-bottom:1px solid var(--g100)}
+.connections-inner{max-width:1200px;margin:0 auto}
+.conn-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:36px}
+.conn-count{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3vw,38px);font-weight:300;color:var(--black);letter-spacing:-.5px;line-height:1.2}
+.conn-count strong{font-weight:600}
+.conn-note{font-size:13px;color:var(--g400);max-width:220px;text-align:right;line-height:1.7}
+.conn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.conn-card{border:1px solid var(--g100);border-radius:4px;padding:18px 20px;background:var(--g50);transition:border-color .2s,background .2s}
+.conn-card:hover{border-color:var(--g200);background:var(--white)}
+.conn-roles{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.conn-role{font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:var(--g600);background:var(--white);border:1px solid var(--g200);padding:3px 7px;border-radius:2px}
+.conn-sep{font-size:10px;color:var(--g300)}
+.conn-venture{font-size:13.5px;font-weight:600;color:var(--black);margin-bottom:3px}
+.conn-meta{font-size:11.5px;color:var(--g400)}
+
+/* FINAL CTA */
+.cta-section{padding:120px 56px;text-align:center}
+.cta-inner{max-width:560px;margin:0 auto}
+.cta-line{width:1px;height:56px;background:var(--g200);margin:0 auto 36px}
+.cta-title{font-family:'Cormorant Garamond',serif;font-size:clamp(40px,5vw,62px);font-weight:300;color:var(--black);letter-spacing:-1.5px;line-height:1.1;margin-bottom:14px}
+.cta-title strong{font-weight:600}
+.cta-title em{font-style:italic}
+.cta-sub{font-size:14px;color:var(--g400);margin-bottom:36px;letter-spacing:.5px;font-family:'DM Mono',monospace;text-transform:uppercase;font-size:10.5px}
+.cta-reviewed{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--g300);margin-top:14px}
+
+/* FOOTER */
+footer{background:var(--black);padding:36px 56px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--g800)}
+.footer-logo{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;color:var(--white);letter-spacing:.3px;display:flex;align-items:flex-start}
+.footer-logo-dot{width:4px;height:4px;border-radius:50%;background:var(--gold);margin-top:3px;margin-left:1px}
+.footer-links{display:flex;gap:24px}
+.footer-links a{font-size:12px;color:var(--g600);text-decoration:none;transition:color .2s;font-weight:500}
+.footer-links a:hover{color:var(--g400)}
+.footer-copy{font-size:11.5px;color:var(--g700);font-family:'DM Mono',monospace}
+
+/* FEEDBACK */
+.feedback-trigger{position:fixed;bottom:24px;right:24px;z-index:400;background:var(--white);border:1px solid var(--g200);color:var(--g600);padding:9px 16px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 3px 16px rgba(0,0,0,.08);transition:all .2s;letter-spacing:.2px}
+.feedback-trigger:hover{background:var(--black);color:var(--white);border-color:var(--black);transform:translateY(-1px)}
+.modal-overlay{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex;animation:mfadeIn .22s var(--ease)}
+@keyframes mfadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:var(--white);border-radius:6px;padding:36px;max-width:460px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.18);animation:modalUp .28s var(--ease)}
+@keyframes modalUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;color:var(--black);margin-bottom:6px;letter-spacing:-.3px}
+.modal-sub{font-size:13px;color:var(--g500);margin-bottom:22px;line-height:1.65}
+.mf{margin-bottom:14px}
+.mf label{display:block;font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--g400);margin-bottom:6px}
+.mf input,.mf textarea,.mf select{width:100%;background:var(--g50);border:1px solid var(--g200);border-radius:3px;padding:11px 13px;font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--black);outline:none;resize:none;transition:border-color .2s}
+.mf input:focus,.mf textarea:focus,.mf select:focus{border-color:var(--black);background:var(--white)}
+.modal-btns{display:flex;gap:10px;margin-top:6px}
+.m-cancel{flex:1;padding:11px;border-radius:3px;border:1px solid var(--g200);background:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--g600);cursor:pointer;transition:all .2s}
+.m-cancel:hover{border-color:var(--g300)}
+.m-submit{flex:2;padding:11px;border-radius:3px;border:none;background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.m-submit:hover{background:var(--g800)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .65s var(--ease),transform .65s var(--ease)}
+.reveal.visible{opacity:1;transform:none}
+.rd1{transition-delay:.1s}.rd2{transition-delay:.2s}.rd3{transition-delay:.3s}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  nav,footer{padding:0 28px}
+  nav{height:60px}
+  .nav-center{display:none}
+  .hamburger{display:flex}
+  .hero,.stats-row,.who-section,.how-section,.principles-section,.connections-section,.cta-section{padding-left:28px;padding-right:28px}
+  .hero-inner{grid-template-columns:1fr;gap:40px;padding:80px 0 56px}
+  .hero-right{display:none}
+  .stats-row{flex-wrap:wrap;gap:0}
+  .stat-item{min-width:50%;padding:20px}
+  .who-grid{grid-template-columns:1fr 1fr}
+  .how-steps{grid-template-columns:1fr;gap:28px}
+  .how-steps::before{display:none}
+  .how-header{flex-direction:column;align-items:flex-start;gap:12px}
+  .how-note{text-align:left;max-width:100%}
+  .principles-grid{grid-template-columns:1fr}
+  .conn-grid{grid-template-columns:1fr 1fr}
+  .conn-header{flex-direction:column;gap:10px}
+  .conn-note{text-align:left}
+  footer{flex-direction:column;gap:18px;text-align:center;padding:28px}
+  .footer-links{flex-wrap:wrap;justify-content:center}
+}
+@media(max-width:600px){
+  nav,footer{padding:0 20px}
+  .hero,.stats-row,.who-section,.how-section,.principles-section,.connections-section,.cta-section{padding-left:20px;padding-right:20px}
+  .who-grid{grid-template-columns:1fr}
+  .conn-grid{grid-template-columns:1fr}
+  .stat-item{min-width:100%}
+  .stat-item+.stat-item::before{display:none}
+  .feedback-trigger{bottom:16px;right:16px}
+}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a href="coattic-landing.html" class="nav-logo">CoAttic<span class="nav-logo-dot"></span></a>
+  <ul class="nav-center">
+    <li><a href="#about">About</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#membership">Membership</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="coattic-auth.html" class="nav-signin">Access Your Network</a>
+    <a href="coattic-auth.html" class="nav-apply">Apply for Membership</a>
+  </div>
+  <button class="hamburger" id="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="mobile-nav" id="mobileNav">
+  <a href="#about" onclick="toggleNav()">About</a>
+  <a href="#how" onclick="toggleNav()">How It Works</a>
+  <a href="#membership" onclick="toggleNav()">Membership</a>
+  <a href="coattic-auth.html" onclick="toggleNav()">Access Your Network</a>
+  <a href="coattic-auth.html" class="mn-apply" onclick="toggleNav()">Apply for Membership</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-rule"></div>
+      <h1 class="hero-title">Where Vision<br>Meets <em>Execution.</em></h1>
+      <p class="hero-sub">A curated global network connecting founders, co-founders, core teams, and investors through structured alignment.</p>
+      <div class="hero-ctas">
+        <a href="coattic-auth.html" class="btn-primary">Apply for Membership</a>
+        <a href="#how" class="btn-secondary">How It Works <div class="btn-sec-circle">→</div></a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="member-card">
+        <div class="mc-label">Member Profile — Limited Preview</div>
+        <div class="mc-header">
+          <div class="mc-avatar">AK</div>
+          <div>
+            <div class="mc-name">Arjun Kumar</div>
+            <div class="mc-role-loc">Founder &nbsp;·&nbsp; EdTech &nbsp;·&nbsp; Bangalore</div>
+            <div class="mc-badge">Strong</div>
+          </div>
+        </div>
+        <div class="mc-divider"></div>
+        <div class="mc-row"><span class="mc-lbl">Primary Expertise</span><span class="mc-val">Product Strategy</span></div>
+        <div class="mc-row"><span class="mc-lbl">Experience</span><span class="mc-val">5–10 Years</span></div>
+        <div class="mc-row"><span class="mc-lbl">Venture Stage</span><span class="mc-val">MVP</span></div>
+        <div class="mc-row"><span class="mc-lbl">Commitment</span><span class="mc-val">Full-time</span></div>
+        <div class="mc-headline">"Building the operating layer for India's coaching institute ecosystem."</div>
+        <div class="mc-bottom">
+          <div class="mc-readiness">Readiness: <strong>Strong</strong></div>
+          <button class="mc-shortlist-btn" onclick="window.location.href='coattic-auth.html'">Shortlist</button>
+        </div>
+        <div class="mc-lock">— &nbsp; Full vision, alignment data, and contact details unlocked only after structured evaluation.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat-item reveal"><div class="stat-number">2,400+</div><div class="stat-label">Verified Members</div></div>
+  <div class="stat-item reveal rd1"><div class="stat-number">340+</div><div class="stat-label">Teams Formed</div></div>
+  <div class="stat-item reveal rd2"><div class="stat-number">91%</div><div class="stat-label">Alignment Satisfaction</div></div>
+  <div class="stat-item reveal rd3"><div class="stat-number">80+</div><div class="stat-label">Ventures Launched</div></div>
+</div>
+
+<!-- WHO -->
+<section class="who-section" id="about">
+  <div class="who-inner">
+    <div class="reveal"><div class="sec-eyebrow">Who It's For</div><h2 class="sec-title"><strong>Built for Long-Term Builders.</strong></h2></div>
+    <div class="who-grid">
+      <div class="who-block reveal"><div class="who-num">01</div><div class="who-type">Founders</div><div class="who-desc">Seeking aligned co-founders and early execution partners.</div></div>
+      <div class="who-block reveal rd1"><div class="who-num">02</div><div class="who-type">Co-Founders</div><div class="who-desc">Technical and strategic builders ready for meaningful ownership.</div></div>
+      <div class="who-block reveal rd2"><div class="who-num">03</div><div class="who-type">Core Teams</div><div class="who-desc">Operators who thrive in early-stage environments.</div></div>
+      <div class="who-block reveal rd3"><div class="who-num">04</div><div class="who-type">Investors</div><div class="who-desc">Capital partners focused on long-term company building.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section class="how-section" id="how">
+  <div class="how-inner">
+    <div class="how-header reveal">
+      <div><div class="sec-eyebrow">How It Works</div><h2 class="sec-title"><strong>Structured.</strong> Intentional. <em>Private.</em></h2></div>
+      <div class="how-note">No public feeds. No cold outreach. Every introduction is earned through demonstrated alignment.</div>
+    </div>
+    <div class="how-steps">
+      <div class="how-step reveal"><div class="how-step-num">I</div><div class="how-step-title">Apply</div><div class="how-step-desc">Create your profile outlining your venture, ambition scale, and operating philosophy. Membership is reviewed and approved within 48 hours.</div></div>
+      <div class="how-step reveal rd1"><div class="how-step-num">II</div><div class="how-step-title">Alignment Mapping</div><div class="how-step-desc">We evaluate strategic fit across vision, commitment level, working style, and ownership expectations. Two independent scoring layers. No shortcuts.</div></div>
+      <div class="how-step reveal rd2"><div class="how-step-num">III</div><div class="how-step-title">Curated Introductions</div><div class="how-step-desc">Members with strong strategic alignment are introduced privately. Every introduction is deliberate. Discussion opens only after mutual confirmation.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRINCIPLES -->
+<section class="principles-section" id="membership">
+  <div class="principles-inner">
+    <div class="p-header reveal"><div class="sec-eyebrow">Our Principles</div><h2 class="sec-title"><strong>Built on Principles,</strong><br><em>Not Algorithms Alone.</em></h2></div>
+    <div class="principles-grid">
+      <div class="principle reveal"><div class="p-num">01</div><div class="p-title">Intentional Access</div><div class="p-desc">Membership is structured to maintain quality and long-term focus. Every application is reviewed. Access here means something.</div></div>
+      <div class="principle reveal rd1"><div class="p-num">02</div><div class="p-title">Strategic Alignment</div><div class="p-desc">Introductions are based on vision, commitment, and execution philosophy. Compatibility is earned, not assumed.</div></div>
+      <div class="principle reveal rd2"><div class="p-num">03</div><div class="p-title">Private Interactions</div><div class="p-desc">No public feeds. No vanity metrics. Every introduction is deliberate. Your alignment data is never public.</div></div>
+      <div class="principle reveal rd3"><div class="p-num">04</div><div class="p-title">Long-Term Thinking</div><div class="p-desc">We prioritise enduring partnerships over short-term connections. The right relationship outlasts any single venture.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONNECTIONS -->
+<section class="connections-section">
+  <div class="connections-inner">
+    <div class="conn-header reveal">
+      <div class="conn-count"><strong>340+</strong> partnerships<br>formed through structured alignment.</div>
+      <div class="conn-note">Early members building on CoAttic. Real ventures. Real outcomes.</div>
+    </div>
+    <div class="conn-grid">
+      <div class="conn-card reveal"><div class="conn-roles"><span class="conn-role">Founder</span><span class="conn-sep">—</span><span class="conn-role">Co-Founder</span></div><div class="conn-venture">EdTech Operating Platform</div><div class="conn-meta">Bangalore &nbsp;·&nbsp; MVP Stage</div></div>
+      <div class="conn-card reveal rd1"><div class="conn-roles"><span class="conn-role">Founder</span><span class="conn-sep">—</span><span class="conn-role">Technical Co-Founder</span></div><div class="conn-venture">B2B SaaS — Supply Chain</div><div class="conn-meta">Delhi NCR &nbsp;·&nbsp; Revenue Stage</div></div>
+      <div class="conn-card reveal rd2"><div class="conn-roles"><span class="conn-role">Co-Founder</span><span class="conn-sep">—</span><span class="conn-role">Core Team</span></div><div class="conn-venture">FinTech — Credit Infrastructure</div><div class="conn-meta">Mumbai &nbsp;·&nbsp; Seed Stage</div></div>
+      <div class="conn-card reveal"><div class="conn-roles"><span class="conn-role">Founder</span><span class="conn-sep">—</span><span class="conn-role">Co-Founder</span></div><div class="conn-venture">HealthTech — Diagnostics</div><div class="conn-meta">Hyderabad &nbsp;·&nbsp; Idea Stage</div></div>
+      <div class="conn-card reveal rd1"><div class="conn-roles"><span class="conn-role">Founder</span><span class="conn-sep">—</span><span class="conn-role">Core Team</span></div><div class="conn-venture">D2C Consumer Brand</div><div class="conn-meta">Pune &nbsp;·&nbsp; Revenue Stage</div></div>
+      <div class="conn-card reveal rd2"><div class="conn-roles"><span class="conn-role">Founder</span><span class="conn-sep">—</span><span class="conn-role">Technical Co-Founder</span></div><div class="conn-venture">AgriTech — Input Distribution</div><div class="conn-meta">Bangalore &nbsp;·&nbsp; MVP Stage</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <div class="cta-line reveal"></div>
+    <h2 class="cta-title reveal"><strong>Join a Network</strong><br><em>Built on Alignment.</em></h2>
+    <div class="cta-sub reveal">Global &nbsp;·&nbsp; Private &nbsp;·&nbsp; Structured</div>
+    <div class="reveal">
+      <a href="coattic-auth.html" class="btn-primary" style="padding:14px 38px;font-size:14px">Apply for Membership</a>
+      <div class="cta-reviewed">Reviewed within 48 hours</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">CoAttic<span class="footer-logo-dot"></span></div>
+  <div class="footer-links">
+    <a href="#about">About</a>
+    <a href="#how">How It Works</a>
+    <a href="#membership">Membership</a>
+    <a href="coattic-auth.html">Access Your Network</a>
+    <a href="#" onclick="openFeedback();return false">Share Feedback</a>
+    <a href="coattic-admin.html">Admin</a>
+  </div>
+  <div class="footer-copy">© 2025 CoAttic.com</div>
+</footer>
+
+<button class="feedback-trigger" onclick="openFeedback()">Share Feedback</button>
+
+<!-- FEEDBACK MODAL -->
+<div class="modal-overlay" id="feedbackModal" onclick="if(event.target===this)closeFeedback()">
+  <div class="modal">
+    <div class="modal-title">Share Your Feedback</div>
+    <div class="modal-sub">Your input shapes the platform directly. We read every submission.</div>
+    <div class="mf"><label>Type</label><select id="fbType"><option>Product Suggestion</option><option>Feature Request</option><option>Bug Report</option><option>General Feedback</option></select></div>
+    <div class="mf"><label>Message</label><textarea rows="4" id="fbMsg" placeholder="What would make CoAttic more valuable for you?"></textarea></div>
+    <div class="mf"><label>Email (optional)</label><input type="email" placeholder="We'll respond if you leave your email"/></div>
+    <div class="modal-btns">
+      <button class="m-cancel" onclick="closeFeedback()">Cancel</button>
+      <button class="m-submit" onclick="submitFeedback()">Submit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',window.scrollY>30)});
+function toggleNav(){document.getElementById('mobileNav').classList.toggle('open')}
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+function openFeedback(){document.getElementById('feedbackModal').classList.add('open')}
+function closeFeedback(){document.getElementById('feedbackModal').classList.remove('open')}
+function submitFeedback(){
+  if(!document.getElementById('fbMsg').value.trim()){alert('Please enter your message.');return}
+  closeFeedback();
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0A0A0A;color:white;padding:12px 22px;border-radius:3px;font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;z-index:700;box-shadow:0 4px 16px rgba(0,0,0,.2);letter-spacing:.2px';
+  t.textContent='Feedback received. Thank you.';
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3200);
+}
+</script>
+</body>
+</html>
