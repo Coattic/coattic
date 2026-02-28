@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CoAttic — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#0A0A0A;--white:#fff;--g50:#FAFAFA;--g100:#F4F4F4;--g200:#E8E8E8;--g300:#D0D0D0;--g400:#A0A0A0;--g500:#6B6B6B;--g600:#444444;--g700:#2A2A2A;--g800:#1A1A1A;--gold:#8B6914;--gold-lt:#C9A84C;--gold-xlt:#F5EDD6;--green:#1A5C38;--green-lt:#D4F0E3;--red:#C0392B;--red-lt:#FDECEA;--ease:cubic-bezier(.4,0,.2,1)}
+body{background:var(--g50);font-family:'DM Sans',sans-serif;color:var(--black);-webkit-font-smoothing:antialiased;min-height:100vh}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:200;height:60px;padding:0 40px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--g200)}
+.t-logo{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:var(--black);text-decoration:none;display:flex;align-items:flex-start}
+.t-logo-dot{width:4px;height:4px;border-radius:50%;background:var(--gold);margin-top:3px;margin-left:1px}
+.t-admin-badge{font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);background:var(--gold-xlt);border:1px solid rgba(139,105,20,.15);padding:3px 9px;border-radius:2px}
+.t-right{display:flex;align-items:center;gap:12px}
+.t-btn{padding:8px 16px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block;letter-spacing:.2px}
+.t-btn-s{background:var(--white);color:var(--g600);border:1px solid var(--g200)}
+.t-btn-s:hover{border-color:var(--black);color:var(--black)}
+.layout{display:grid;grid-template-columns:220px 1fr;min-height:100vh;padding-top:60px}
+.sidebar{background:var(--white);border-right:1px solid var(--g200);padding:20px 0;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto;display:flex;flex-direction:column}
+.sb-label{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--g300);padding:0 18px;margin-bottom:6px;margin-top:16px}
+.sb-link{display:flex;align-items:center;justify-content:space-between;padding:8px 18px;font-size:13px;font-weight:500;color:var(--g600);text-decoration:none;transition:all .15s;background:none;border:none;width:100%;text-align:left;cursor:pointer;letter-spacing:.1px;font-family:'DM Sans',sans-serif}
+.sb-link:hover{background:var(--g50);color:var(--black)}
+.sb-link.active{background:var(--g100);color:var(--black);font-weight:600}
+.sb-count{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;color:var(--white);background:var(--black);padding:1px 6px;border-radius:2px;min-width:20px;text-align:center}
+.sb-div{height:1px;background:var(--g100);margin:4px 0}
+.main{padding:36px 40px}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px}
+.ph-title{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;color:var(--black);letter-spacing:-.5px;margin-bottom:3px}
+.ph-sub{font-size:13px;color:var(--g500)}
+/* STAT CARDS */
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.stat-card{background:var(--white);border:1px solid var(--g200);border-radius:4px;padding:20px}
+.sc-eyebrow{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--g400);margin-bottom:8px}
+.sc-val{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:300;color:var(--black);letter-spacing:-1px;line-height:1;margin-bottom:3px}
+.sc-delta{font-size:12px;font-weight:600}
+.sc-delta.up{color:var(--green)}
+.sc-delta.down{color:var(--red)}
+/* SECTION */
+.section{background:var(--white);border:1px solid var(--g200);border-radius:4px;margin-bottom:20px}
+.sec-hd{padding:18px 22px;border-bottom:1px solid var(--g100);display:flex;align-items:center;justify-content:space-between}
+.sec-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:var(--black);letter-spacing:-.2px}
+.sec-meta{font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--g400)}
+.sec-body{padding:0}
+/* TABLE */
+.admin-table{width:100%;border-collapse:collapse}
+.admin-table th{padding:10px 22px;font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--g400);text-align:left;border-bottom:1px solid var(--g100)}
+.admin-table td{padding:14px 22px;font-size:13px;border-bottom:1px solid var(--g50);vertical-align:middle}
+.admin-table tr:last-child td{border-bottom:none}
+.admin-table tr:hover td{background:var(--g50)}
+.td-name{font-weight:600;color:var(--black)}
+.td-email{color:var(--g500);font-size:12.5px}
+.td-role{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--g600);background:var(--g100);border:1px solid var(--g200);padding:2px 7px;border-radius:2px;display:inline-block}
+.td-score{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;color:var(--black);letter-spacing:-.5px}
+.td-readiness{font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:1px;text-transform:uppercase}
+.td-readiness.strong{color:var(--gold)}
+.td-readiness.established{color:var(--g600)}
+.td-readiness.developing{color:var(--g400)}
+.td-date{font-family:'DM Mono',monospace;font-size:10.5px;color:var(--g400)}
+.td-vision{font-size:12.5px;color:var(--g500);max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-style:italic}
+/* ACTION BUTTONS */
+.action-btns{display:flex;gap:6px}
+.act-btn{padding:5px 12px;border-radius:2px;font-family:'DM Sans',sans-serif;font-size:11.5px;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:.1px;border:none}
+.act-approve{background:var(--green-lt);color:var(--green)}
+.act-approve:hover{background:var(--green);color:var(--white)}
+.act-reject{background:var(--red-lt);color:var(--red)}
+.act-reject:hover{background:var(--red);color:var(--white)}
+.act-view{background:var(--g100);color:var(--g600);border:1px solid var(--g200)}
+.act-view:hover{border-color:var(--black);color:var(--black)}
+/* STATUS PILL */
+.status{display:inline-flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:2px}
+.status-dot{width:5px;height:5px;border-radius:50%}
+.status.pending{color:var(--gold);background:var(--gold-xlt);border:1px solid rgba(139,105,20,.15)}
+.status.pending .status-dot{background:var(--gold)}
+.status.approved{color:var(--green);background:var(--green-lt);border:1px solid rgba(26,92,56,.15)}
+.status.approved .status-dot{background:var(--green)}
+.status.rejected{color:var(--red);background:var(--red-lt);border:1px solid rgba(192,57,43,.15)}
+.status.rejected .status-dot{background:var(--red)}
+/* CONNECTIONS */
+.conn-card{padding:16px 22px;border-bottom:1px solid var(--g50);display:flex;align-items:center;gap:14px}
+.conn-card:last-child{border-bottom:none}
+.conn-parties{display:flex;align-items:center;gap:8px;flex:1}
+.conn-av{width:32px;height:32px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:600;color:var(--white);flex-shrink:0}
+.conn-info{min-width:0}
+.conn-name{font-size:13px;font-weight:600;color:var(--black)}
+.conn-role{font-size:11.5px;color:var(--g500)}
+.conn-arrow{font-size:13px;color:var(--g300);font-family:'DM Mono',monospace;flex-shrink:0}
+.conn-venture{font-size:12.5px;color:var(--g500);flex:0 0 180px}
+.conn-score-badge{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--gold);background:var(--gold-xlt);border:1px solid rgba(139,105,20,.15);padding:2px 8px;border-radius:2px;white-space:nowrap}
+.conn-date{font-family:'DM Mono',monospace;font-size:10px;color:var(--g400);white-space:nowrap}
+/* FEEDBACK TABLE */
+.fb-type{font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--g600);background:var(--g100);border:1px solid var(--g200);padding:2px 7px;border-radius:2px;display:inline-block}
+.fb-message{font-size:13px;color:var(--g600);max-width:280px;line-height:1.55}
+.fb-mark{padding:5px 10px;border-radius:2px;background:var(--g100);color:var(--g500);border:1px solid var(--g200);font-family:'DM Sans',sans-serif;font-size:11.5px;font-weight:600;cursor:pointer;transition:all .2s}
+.fb-mark:hover{background:var(--black);color:var(--white);border-color:var(--black)}
+/* METRICS CHART */
+.metrics-section{background:var(--white);border:1px solid var(--g200);border-radius:4px;padding:28px;margin-bottom:20px}
+.ms-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:var(--black);margin-bottom:20px;letter-spacing:-.2px}
+.chart-wrap{display:flex;align-items:flex-end;gap:6px;height:120px;padding-bottom:0}
+.chart-col{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1}
+.chart-bar-track{flex:1;width:100%;display:flex;align-items:flex-end;background:var(--g50);border-radius:2px;overflow:hidden}
+.chart-bar{width:100%;background:var(--black);border-radius:2px;transition:height 1s var(--ease)}
+.chart-lbl{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;color:var(--g400)}
+.chart-val{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;color:var(--black)}
+@media(max-width:1024px){.layout{grid-template-columns:1fr}.sidebar{display:none}.main{padding:24px 20px}.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.topbar{padding:0 16px}.g4{grid-template-columns:1fr 1fr}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:14px">
+    <a href="coattic-landing.html" class="t-logo">CoAttic<span class="t-logo-dot"></span></a>
+    <div class="t-admin-badge">Admin</div>
+  </div>
+  <div class="t-right">
+    <a href="coattic-dashboard.html" class="t-btn t-btn-s">Member View</a>
+    <a href="coattic-landing.html" class="t-btn t-btn-s">Sign Out</a>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sb-label">Platform</div>
+    <button class="sb-link active" onclick="showSection('overview')">Overview</button>
+    <button class="sb-link" onclick="showSection('approvals')">Member Approvals <span class="sb-count" id="approvalCount">7</span></button>
+    <button class="sb-link" onclick="showSection('members')">All Members</button>
+    <button class="sb-link" onclick="showSection('connections')">Connections Formed</button>
+    <div class="sb-div"></div>
+    <div class="sb-label">Quality</div>
+    <button class="sb-link" onclick="showSection('feedback')">Feedback <span class="sb-count">12</span></button>
+    <button class="sb-link" onclick="showSection('metrics')">Platform Metrics</button>
+  </aside>
+
+  <main class="main">
+    <!-- OVERVIEW -->
+    <div id="sec-overview">
+      <div class="ph">
+        <div><div class="ph-title">Admin Dashboard</div><div class="ph-sub">Platform overview, approvals, connections, and member quality management.</div></div>
+      </div>
+      <div class="g4">
+        <div class="stat-card"><div class="sc-eyebrow">Total Members</div><div class="sc-val">2,412</div><div class="sc-delta up">↑ 48 this week</div></div>
+        <div class="stat-card"><div class="sc-eyebrow">Pending Approvals</div><div class="sc-val" id="pendingCount">7</div><div class="sc-delta">Review within 48h</div></div>
+        <div class="stat-card"><div class="sc-eyebrow">Connections Formed</div><div class="sc-val">341</div><div class="sc-delta up">↑ 12 this week</div></div>
+        <div class="stat-card"><div class="sc-eyebrow">Active Rooms</div><div class="sc-val">89</div><div class="sc-delta up">↑ 6 today</div></div>
+      </div>
+      <div class="g4">
+        <div class="stat-card"><div class="sc-eyebrow">Alignment Requests Sent</div><div class="sc-val">1,204</div><div class="sc-delta">All time</div></div>
+        <div class="stat-card"><div class="sc-eyebrow">Avg Alignment Score</div><div class="sc-val">74</div><div class="sc-delta">Across all matches</div></div>
+        <div class="stat-card"><div class="sc-eyebrow">Approval Rate</div><div class="sc-val">68%</div><div class="sc-delta">Target: 65–70%</div></div>
+        <div class="stat-card"><div class="sc-eyebrow">Unread Feedback</div><div class="sc-val">12</div><div class="sc-delta">Oldest: 3 days ago</div></div>
+      </div>
+
+      <!-- QUICK APPROVALS PREVIEW -->
+      <div class="section">
+        <div class="sec-hd">
+          <div class="sec-title">Pending Approvals</div>
+          <button class="act-btn act-view" onclick="showSection('approvals')">View All →</button>
+        </div>
+        <div class="sec-body">
+          <table class="admin-table">
+            <thead><tr><th>Applicant</th><th>Role</th><th>Vision Snippet</th><th>Applied</th><th>Actions</th></tr></thead>
+            <tbody id="quickApprovalsTable">
+              <tr>
+                <td><div class="td-name">Sahil Mehta</div><div class="td-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e291838a8b8ea2879a838f928e87cc818d8f">[email&#160;protected]</a></div></td>
+                <td><div class="td-role">Founder</div></td>
+                <td><div class="td-vision">"Building the freight OS for India's 50 lakh truck owners..."</div></td>
+                <td><div class="td-date">3 Jan 2025</div></td>
+                <td><div class="action-btns"><button class="act-btn act-approve" onclick="approveRow(this)">Approve</button><button class="act-btn act-reject" onclick="rejectRow(this)">Reject</button></div></td>
+              </tr>
+              <tr>
+                <td><div class="td-name">Divya Krishnan</div><div class="td-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="acc8c5dad5cdecc9d4cdc1dcc0c982cfc3c1">[email&#160;protected]</a></div></td>
+                <td><div class="td-role">Co-Founder</div></td>
+                <td><div class="td-vision">"ML engineer with 6 years. Ready to commit full-time to..."</div></td>
+                <td><div class="td-date">3 Jan 2025</div></td>
+                <td><div class="action-btns"><button class="act-btn act-approve" onclick="approveRow(this)">Approve</button><button class="act-btn act-reject" onclick="rejectRow(this)">Reject</button></div></td>
+              </tr>
+              <tr>
+                <td><div class="td-name">Nikhil Agarwal</div><div class="td-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="610f080a09080d210419000c110d044f020e0c">[email&#160;protected]</a></div></td>
+                <td><div class="td-role">Investor</div></td>
+                <td><div class="td-vision">— (Investor profile)</div></td>
+                <td><div class="td-date">2 Jan 2025</div></td>
+                <td><div class="action-btns"><button class="act-btn act-approve" onclick="approveRow(this)">Approve</button><button class="act-btn act-reject" onclick="rejectRow(this)">Reject</button></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- APPROVALS -->
+    <div id="sec-approvals" style="display:none">
+      <div class="ph"><div><div class="ph-title">Member Approvals</div><div class="ph-sub">Review and approve or reject applications within 48 hours.</div></div></div>
+      <div class="section">
+        <div class="sec-hd"><div class="sec-title">Pending Review</div><div class="sec-meta" id="approvalMeta">7 applications</div></div>
+        <div class="sec-body">
+          <table class="admin-table">
+            <thead><tr><th>Applicant</th><th>Role</th><th>Readiness</th><th>Vision Quality</th><th>Applied</th><th>Actions</th></tr></thead>
+            <tbody id="fullApprovalsTable">
+              <tr><td><div class="td-name">Sahil Mehta</div><div class="td-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="384b59505154785d40595548545d165b5755">[email&#160;protected]</a></div></td><td><div class="td-role">Founder</div></td><td><div class="td-score">81</div></td><td><span class="status approved"><span class="status-dot"></span>Clear</span></td><td><div class="td-date">3 Jan</div></td><td><div class="action-btns"><button class="act-btn act-approve" onclick="approveRow(this)">Approve</button><button class="act-btn act-reject" onclick="rejectRow(this)">Reject</button><button class="act-btn act-view">View Profile</button></div></td></tr>
+              <tr><td><div class="td-name">Divya Krishnan</div><div class="td-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cfaba6b9b6ae8faab7aea2bfa3aae1aca0a2">[email&#160;protected]</a></div></td><td><div class="td-role">Co-Founder</div></td><td><div class="td-score">76</div></td><td><span class="status approved"><span class="status-dot"></span>Clear</span></td><td><div class="td-date">3 Jan</div></td><td><div class="action-btns"><button class="act-btn act-approve" onclick="approveRow(this)">Approve</button><button class="act-btn act-reject" onclick="rejectRow(this)">Reject</button><button class="act-btn act-view">View Profile</button></div></td></tr>
+              <tr><td><div class="td-name">Nikhil Agarwal</div><div class="td-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="93fdfaf8fbfaffd3f6ebf2fee3fff6bdf0fcfe">[email&#160;protected]</a></div></td><td><div class="td-role">Investor</div></td><td><div class="td-score">70</div></td><td><span class="status pending"><span class="status-dot"></span>Vague</span></td><td><div class="td-date">2 Jan</div></td><td><div class="action-btns"><button class="act-btn act-approve" onclick="approveRow(this)">Approve</button><button class="act-btn act-reject" onclick="rejectRow(this)">Reject</button><button class="act-btn act-view">View Profile</button></div></td></tr>
+              <tr><td><div class="td-name">Pooja Batra</div><div class="td-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="40302f2f2a21002538212d302c256e232f2d">[email&#160;protected]</a></div></td><td><div class="td-role">Core Team</div></td><td><div class="td-score">68</div></td><td><span class="status approved"><span class="status-dot"></span>Clear</span></td><td><div class="td-date">2 Jan</div></td><td><div class="action-btns"><button class="act-btn act-approve" onclick="approveRow(this)">Approve</button><button class="act-btn act-reject" onclick="rejectRow(this)">Reject</button><button class="act-btn act-view">View Profile</button></div></td></tr>
+              <tr><td><div class="td-name">Arun Pillai</div><div class="td-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="69081b1c07290c11080419050c470a0604">[email&#160;protected]</a></div></td><td><div class="td-role">Founder</div></td><td><div class="td-score">58</div></td><td><span class="status rejected"><span class="status-dot"></span>Weak</span></td><td><div class="td-date">1 Jan</div></td><td><div class="action-btns"><button class="act-btn act-approve" onclick="approveRow(this)">Approve</button><button class="act-btn act-reject" onclick="rejectRow(this)">Reject</button><button class="act-btn act-view">View Profile</button></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONNECTIONS -->
+    <div id="sec-connections" style="display:none">
+      <div class="ph"><div><div class="ph-title">Connections Formed</div><div class="ph-sub">Teams formed through structured alignment on CoAttic.</div></div></div>
+      <div class="section">
+        <div class="sec-hd"><div class="sec-title">All Connections</div><div class="sec-meta">341 total</div></div>
+        <div class="sec-body">
+          <div class="conn-card">
+            <div class="conn-parties">
+              <div class="conn-av" style="background:#1A1A1A">AK</div>
+              <div class="conn-info"><div class="conn-name">Arjun Kumar</div><div class="conn-role">Founder</div></div>
+            </div>
+            <div class="conn-arrow">—</div>
+            <div class="conn-parties">
+              <div class="conn-av" style="background:#2A2A2A">PS</div>
+              <div class="conn-info"><div class="conn-name">Priya Sharma</div><div class="conn-role">Co-Founder</div></div>
+            </div>
+            <div class="conn-venture">EduOS &nbsp;·&nbsp; EdTech</div>
+            <div class="conn-score-badge">Score: 83</div>
+            <div class="conn-date">3 Jan 2025</div>
+          </div>
+          <div class="conn-card">
+            <div class="conn-parties">
+              <div class="conn-av" style="background:#2A2A2A">RK</div>
+              <div class="conn-info"><div class="conn-name">Rahul Khandelwal</div><div class="conn-role">Founder</div></div>
+            </div>
+            <div class="conn-arrow">—</div>
+            <div class="conn-parties">
+              <div class="conn-av" style="background:#1A1A1A">SM</div>
+              <div class="conn-info"><div class="conn-name">Sneha Mishra</div><div class="conn-role">Co-Founder</div></div>
+            </div>
+            <div class="conn-venture">TrackFlow &nbsp;·&nbsp; Logistics</div>
+            <div class="conn-score-badge">Score: 79</div>
+            <div class="conn-date">1 Jan 2025</div>
+          </div>
+          <div class="conn-card">
+            <div class="conn-parties">
+              <div class="conn-av" style="background:#444">VS</div>
+              <div class="conn-info"><div class="conn-name">Vikrant Sharma</div><div class="conn-role">Founder</div></div>
+            </div>
+            <div class="conn-arrow">—</div>
+            <div class="conn-parties">
+              <div class="conn-av" style="background:#2A2A2A">AP</div>
+              <div class="conn-info"><div class="conn-name">Ananya Patel</div><div class="conn-role">Core Team</div></div>
+            </div>
+            <div class="conn-venture">PayRoute &nbsp;·&nbsp; FinTech</div>
+            <div class="conn-score-badge">Score: 91</div>
+            <div class="conn-date">28 Dec 2024</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MEMBERS -->
+    <div id="sec-members" style="display:none">
+      <div class="ph"><div><div class="ph-title">All Members</div><div class="ph-sub">Active members on the platform.</div></div></div>
+      <div class="section">
+        <div class="sec-hd"><div class="sec-title">Active Members</div><div class="sec-meta">2,412 total</div></div>
+        <div class="sec-body">
+          <table class="admin-table">
+            <thead><tr><th>Member</th><th>Role</th><th>Readiness</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td><div class="td-name">Arjun Kumar</div><div class="td-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c8a9baa2bda688adb0a9a5b8a4ade6aba7a5">[email&#160;protected]</a></div></td><td><div class="td-role">Founder</div></td><td><span class="td-readiness strong">Strong (78)</span></td><td><span class="status approved"><span class="status-dot"></span>Active</span></td><td><div class="td-date">20 Dec</div></td><td><div class="action-btns"><button class="act-btn act-view">View</button></div></td></tr>
+              <tr><td><div class="td-name">Priya Sharma</div><div class="td-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3a4a4853435b7a5f425b574a565f14595557">[email&#160;protected]</a></div></td><td><div class="td-role">Co-Founder</div></td><td><span class="td-readiness strong">Strong (84)</span></td><td><span class="status approved"><span class="status-dot"></span>Active</span></td><td><div class="td-date">18 Dec</div></td><td><div class="action-btns"><button class="act-btn act-view">View</button></div></td></tr>
+              <tr><td><div class="td-name">Rohan Verma</div><div class="td-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="285a47404946684d50494558444d064b4745">[email&#160;protected]</a></div></td><td><div class="td-role">Co-Founder</div></td><td><span class="td-readiness established">Established (67)</span></td><td><span class="status approved"><span class="status-dot"></span>Active</span></td><td><div class="td-date">15 Dec</div></td><td><div class="action-btns"><button class="act-btn act-view">View</button></div></td></tr>
+              <tr><td><div class="td-name">Meera Nair</div><div class="td-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1a777f7f687b5a7f627b776a767f34797577">[email&#160;protected]</a></div></td><td><div class="td-role">Co-Founder</div></td><td><span class="td-readiness strong">Strong (81)</span></td><td><span class="status approved"><span class="status-dot"></span>Active</span></td><td><div class="td-date">12 Dec</div></td><td><div class="action-btns"><button class="act-btn act-view">View</button></div></td></tr>
+              <tr><td><div class="td-name">Karan Shah</div><div class="td-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bdd6dccfdcd3fdd8c5dcd0cdd1d893ded2d0">[email&#160;protected]</a></div></td><td><div class="td-role">Core Team</div></td><td><span class="td-readiness established">Established (71)</span></td><td><span class="status approved"><span class="status-dot"></span>Active</span></td><td><div class="td-date">10 Dec</div></td><td><div class="action-btns"><button class="act-btn act-view">View</button></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- FEEDBACK -->
+    <div id="sec-feedback" style="display:none">
+      <div class="ph"><div><div class="ph-title">Member Feedback</div><div class="ph-sub">Unread submissions from platform members.</div></div></div>
+      <div class="section">
+        <div class="sec-hd"><div class="sec-title">Unread Feedback</div><div class="sec-meta">12 unread</div></div>
+        <div class="sec-body">
+          <table class="admin-table">
+            <thead><tr><th>From</th><th>Type</th><th>Message</th><th>Submitted</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td><div class="td-name">Anonymous</div></td><td><div class="fb-type">Suggestion</div></td><td><div class="fb-message">Would love to filter by ambition scale in browse. Right now I'm seeing ₹10Cr founders alongside $100M founders.</div></td><td><div class="td-date">Today</div></td><td><button class="fb-mark" onclick="markRead(this)">Mark Read</button></td></tr>
+              <tr><td><div class="td-name">Member</div></td><td><div class="fb-type">Feature Request</div></td><td><div class="fb-message">Can we have a shortlist note feature? When I shortlist someone I want to write why I did it.</div></td><td><div class="td-date">Yesterday</div></td><td><button class="fb-mark" onclick="markRead(this)">Mark Read</button></td></tr>
+              <tr><td><div class="td-name">Anonymous</div></td><td><div class="fb-type">Bug Report</div></td><td><div class="fb-message">The progress bar on onboarding doesn't update correctly on mobile when going back a step.</div></td><td><div class="td-date">2 days ago</div></td><td><button class="fb-mark" onclick="markRead(this)">Mark Read</button></td></tr>
+              <tr><td><div class="td-name">Member</div></td><td><div class="fb-type">General</div></td><td><div class="fb-message">The alignment score breakdown is genuinely the best feature I've seen on a matching platform. Don't remove it.</div></td><td><div class="td-date">3 days ago</div></td><td><button class="fb-mark" onclick="markRead(this)">Mark Read</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- METRICS -->
+    <div id="sec-metrics" style="display:none">
+      <div class="ph"><div><div class="ph-title">Platform Metrics</div><div class="ph-sub">Weekly growth and engagement data.</div></div></div>
+      <div class="metrics-section">
+        <div class="ms-title">New Members — Last 8 Weeks</div>
+        <div class="chart-wrap" id="memberChart"></div>
+      </div>
+      <div class="g4">
+        <div class="stat-card"><div class="sc-eyebrow">Alignment Acceptance Rate</div><div class="sc-val">64%</div><div class="sc-delta up">↑ 3% vs last month</div></div>
+        <div class="stat-card"><div class="sc-eyebrow">Avg Questions Answered</div><div class="sc-val">4.8</div><div class="sc-delta">of 5 required</div></div>
+        <div class="stat-card"><div class="sc-eyebrow">Avg Score — Connections</div><div class="sc-val">81</div><div class="sc-delta">Among completed matches</div></div>
+        <div class="stat-card"><div class="sc-eyebrow">Vision Completion Rate</div><div class="sc-val">88%</div><div class="sc-delta">Founders with statements</div></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+function showSection(id){
+  ['overview','approvals','members','connections','feedback','metrics'].forEach(s=>{
+    document.getElementById('sec-'+s).style.display=s===id?'block':'none';
+  });
+  document.querySelectorAll('.sb-link').forEach((l,i)=>{
+    l.classList.remove('active');
+    const sections=['overview','approvals','members','connections','feedback','metrics'];
+    if(l.textContent.toLowerCase().includes(id)) l.classList.add('active');
+  });
+}
+
+function approveRow(btn){
+  const row=btn.closest('tr');
+  row.style.transition='all .3s';row.style.opacity='0';
+  setTimeout(()=>{row.remove();updateApprovalCount(-1);},300);
+  showToast('Member approved and notified.');
+}
+function rejectRow(btn){
+  const row=btn.closest('tr');
+  row.style.transition='all .3s';row.style.opacity='0';
+  setTimeout(()=>{row.remove();updateApprovalCount(-1);},300);
+  showToast('Application rejected. Member will be notified with a 30-day reapply window.');
+}
+function markRead(btn){
+  const row=btn.closest('tr');
+  row.style.opacity='.5';
+  btn.textContent='Read';btn.disabled=true;
+}
+
+let approvalCount=7;
+function updateApprovalCount(delta){
+  approvalCount=Math.max(0,approvalCount+delta);
+  document.getElementById('approvalCount').textContent=approvalCount;
+  document.getElementById('pendingCount').textContent=approvalCount;
+  if(document.getElementById('approvalMeta')) document.getElementById('approvalMeta').textContent=approvalCount+' applications';
+}
+
+function showToast(msg){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0A0A0A;color:white;padding:11px 20px;border-radius:3px;font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;z-index:700;letter-spacing:.2px;white-space:nowrap';
+  t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);
+}
+
+const weekData=[32,45,41,58,63,72,89,104];
+const maxVal=Math.max(...weekData);
+const chartEl=document.getElementById('memberChart');
+if(chartEl){
+  chartEl.innerHTML=weekData.map((v,i)=>`
+    <div class="chart-col">
+      <div class="chart-bar-track"><div class="chart-bar" style="height:${(v/maxVal*100)}%"></div></div>
+      <div class="chart-lbl">W${i+1}</div>
+      <div class="chart-val">${v}</div>
+    </div>
+  `).join('');
+}
+
+// Load real member approvals from Supabase
+(async()=>{
+  const sb=window.supabase.createClient(
+    'https://holytxxscklzivoxzwmd.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvbHl0eHhzY2tseml2b3h6d21kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMjk3NDQsImV4cCI6MjA4NzYwNTc0NH0.5NUHjhHL5n8bIYeeUcGqEx8QOG1G0zJQfCHiyYPRltE'
+  );
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){window.location.href='coattic-auth.html';return;}
+  const n=session.user.user_metadata?.name||localStorage.getItem('coattic_name')||'Admin';
+  const i=n.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+  
+  // Load pending approvals
+  const {data:pending}=await sb.from('profiles').select('id,name,email,role,score,readiness,idea,created_at').eq('approved',false).order('created_at',{ascending:false});
+  if(pending&&pending.length>0){
+    approvalCount=pending.length;
+    document.getElementById('approvalCount').textContent=approvalCount;
+    document.getElementById('pendingCount').textContent=approvalCount;
+    const tbody=document.getElementById('fullApprovalsTable');
+    if(tbody){
+      tbody.innerHTML=pending.map(p=>`
+        <tr data-id="${p.id}">
+          <td><div class="td-name">${p.name}</div><div class="td-email">${p.email}</div></td>
+          <td><div class="td-role">${p.role||'?'}</div></td>
+          <td><div class="td-score">${p.score||0}</div></td>
+          <td><span class="status pending"><span class="status-dot"></span>Pending</span></td>
+          <td><div class="td-date">${new Date(p.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</div></td>
+          <td><div class="action-btns">
+            <button class="act-btn act-approve" onclick="approveProfile('${p.id}',this)">Approve</button>
+            <button class="act-btn act-reject" onclick="rejectProfile('${p.id}',this)">Reject</button>
+          </div></td>
+        </tr>`).join('');
+    }
+  }
+
+  async function approveProfile(id,btn){
+    await sb.from('profiles').update({approved:true}).eq('id',id);
+    const row=btn.closest('tr');
+    row.style.transition='all .3s';row.style.opacity='0';
+    setTimeout(()=>{row.remove();updateApprovalCount(-1);},300);
+    showToast('Member approved successfully.');
+  }
+  async function rejectProfile(id,btn){
+    await sb.from('profiles').delete().eq('id',id);
+    const row=btn.closest('tr');
+    row.style.transition='all .3s';row.style.opacity='0';
+    setTimeout(()=>{row.remove();updateApprovalCount(-1);},300);
+    showToast('Application rejected. Member notified.');
+  }
+  window.approveProfile=approveProfile;
+  window.rejectProfile=rejectProfile;
+})();
+</script>
+</body>
+</html>

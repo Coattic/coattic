@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CoAttic — Founder Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#0A0A0A;--white:#fff;--g50:#FAFAFA;--g100:#F4F4F4;--g200:#E8E8E8;--g300:#D0D0D0;--g400:#A0A0A0;--g500:#6B6B6B;--g600:#444444;--g700:#2A2A2A;--g800:#1A1A1A;--gold:#8B6914;--gold-lt:#C9A84C;--gold-xlt:#F5EDD6;--ease:cubic-bezier(.4,0,.2,1)}
+body{background:var(--g50);font-family:'DM Sans',sans-serif;color:var(--black);-webkit-font-smoothing:antialiased;min-height:100vh}
+/* TOPBAR */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:200;height:60px;padding:0 40px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--g200)}
+.t-logo{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:var(--black);text-decoration:none;display:flex;align-items:flex-start}
+.t-logo-dot{width:4px;height:4px;border-radius:50%;background:var(--gold);margin-top:3px;margin-left:1px}
+.t-nav{display:flex;align-items:center;gap:32px}
+.t-nav a{font-size:13px;font-weight:500;color:var(--g500);text-decoration:none;transition:color .2s}
+.t-nav a:hover,.t-nav a.active{color:var(--black)}
+.t-right{display:flex;align-items:center;gap:12px}
+.t-avatar{width:32px;height:32px;border-radius:3px;background:var(--black);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:600;color:var(--white);cursor:pointer}
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh;padding-top:60px}
+/* SIDEBAR */
+.sidebar{background:var(--white);border-right:1px solid var(--g200);padding:24px 0;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto;display:flex;flex-direction:column}
+.sb-label{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--g300);padding:0 20px;margin-bottom:6px;margin-top:18px}
+.sb-link{display:flex;align-items:center;padding:9px 20px;font-size:13px;font-weight:500;color:var(--g600);text-decoration:none;transition:all .15s;background:none;border:none;width:100%;text-align:left;cursor:pointer;letter-spacing:.1px;font-family:'DM Sans',sans-serif}
+.sb-link:hover{background:var(--g50);color:var(--black)}
+.sb-link.active{background:var(--g100);color:var(--black);font-weight:600}
+.sb-div{height:1px;background:var(--g100);margin:4px 0}
+.sb-bottom{margin-top:auto;padding:16px 20px;border-top:1px solid var(--g100)}
+.sbp{display:flex;align-items:center;gap:9px}
+.sbp-av{width:32px;height:32px;border-radius:3px;background:var(--black);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:600;color:var(--white)}
+.sbp-name{font-size:13px;font-weight:600;color:var(--black)}
+.sbp-role{font-size:11px;color:var(--g400)}
+/* MAIN */
+.main{padding:36px 40px}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px}
+.ph-title{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;color:var(--black);letter-spacing:-.5px;margin-bottom:3px}
+.ph-sub{font-size:13px;color:var(--g500)}
+.ph-btns{display:flex;gap:9px;flex-shrink:0}
+.btn{padding:9px 18px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.2px;text-decoration:none;display:inline-block;transition:all .2s}
+.btn-p{background:var(--black);color:var(--white);border:none;box-shadow:0 1px 8px rgba(0,0,0,.1)}
+.btn-p:hover{background:var(--g800)}
+.btn-s{background:var(--white);color:var(--g600);border:1px solid var(--g200)}
+.btn-s:hover{border-color:var(--black);color:var(--black)}
+/* GRIDS */
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:20px}
+.card{background:var(--white);border:1px solid var(--g200);border-radius:4px;padding:22px}
+.c-ey{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--g400);margin-bottom:10px}
+.c-val{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--black);letter-spacing:-1px;line-height:1;margin-bottom:3px}
+.c-sub{font-size:12px;color:var(--g500)}
+/* READINESS */
+.rc{background:var(--black);border-radius:4px;padding:24px;position:relative;overflow:hidden}
+.rc::before{content:'';position:absolute;top:0;left:18px;right:18px;height:2px;background:linear-gradient(90deg,var(--gold-lt),transparent)}
+.rc .c-ey{color:var(--g600)}
+.rc-score{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;color:var(--white);letter-spacing:-2px;line-height:1;margin-bottom:6px}
+.rc-badge{display:inline-flex;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);padding:3px 10px;border-radius:2px;font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px}
+.rc-bars{display:flex;flex-direction:column;gap:7px}
+.rc-row{display:flex;align-items:center;gap:9px}
+.rc-lbl{font-size:11px;color:var(--g600);width:60px;font-weight:500}
+.rc-track{flex:1;height:2px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden}
+.rc-fill{height:100%;background:var(--gold-lt);border-radius:2px;transition:width 1.2s var(--ease)}
+/* VISION */
+.vc{border-radius:4px}
+.vc-text{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;color:var(--black);line-height:1.75;font-style:italic;letter-spacing:-.1px;margin-bottom:14px}
+.vc-meta{display:flex;align-items:center;justify-content:space-between}
+.vc-venture{font-size:13px;font-weight:600;color:var(--black)}
+.vc-stage{font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--g400)}
+/* SHORTLIST */
+.sl-panel{background:var(--white);border:1px solid var(--g200);border-radius:4px;margin-bottom:20px}
+.sl-hd{padding:18px 22px;border-bottom:1px solid var(--g100);display:flex;align-items:center;justify-content:space-between}
+.sl-title{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:500;color:var(--black);letter-spacing:-.3px}
+.sl-meta{font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--g400)}
+.sl-body{padding:14px 22px;display:flex;flex-direction:column;gap:8px}
+.sl-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--g100);border-radius:3px;background:var(--g50);transition:all .2s}
+.sl-item:hover{border-color:var(--g200);background:var(--white)}
+.sl-av{width:36px;height:36px;border-radius:3px;background:var(--g200);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:600;color:var(--g600);flex-shrink:0}
+.sl-info{flex:1;min-width:0}
+.sl-name{font-size:13px;font-weight:600;color:var(--black);margin-bottom:1px}
+.sl-role{font-size:11.5px;color:var(--g500)}
+.sl-badge{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--gold);background:var(--gold-xlt);border:1px solid rgba(139,105,20,.15);padding:2px 7px;border-radius:2px;flex-shrink:0}
+.sl-expiry{font-family:'DM Mono',monospace;font-size:9.5px;color:var(--g400);white-space:nowrap}
+.sl-btns{display:flex;gap:6px;flex-shrink:0}
+.sl-btn{padding:6px 12px;border-radius:2px;font-family:'DM Sans',sans-serif;font-size:11.5px;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:.1px}
+.sl-btn-p{background:var(--black);color:var(--white);border:none}
+.sl-btn-p:hover{background:var(--g800)}
+.sl-btn-s{background:var(--white);color:var(--g500);border:1px solid var(--g200)}
+.sl-btn-s:hover{border-color:var(--g400);color:var(--black)}
+/* COMPLETENESS */
+.cc-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cc-title{font-size:13.5px;font-weight:600;color:var(--black)}
+.cc-pct{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--black)}
+.cc-track{height:3px;background:var(--g100);border-radius:3px;overflow:hidden;margin-bottom:14px}
+.cc-fill{height:100%;background:var(--black);border-radius:3px;transition:width 1s var(--ease)}
+.cc-items{display:flex;flex-direction:column;gap:7px}
+.cc-item{display:flex;align-items:center;gap:9px;font-size:12px}
+.cc-dot{width:13px;height:13px;border-radius:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700}
+.cc-dot.d{background:var(--black);color:var(--white)}
+.cc-dot.t{background:var(--g100);border:1.5px solid var(--g200)}
+.cc-text{color:var(--g500)}
+.cc-text.d{color:var(--black)}
+/* ACTIVITY */
+.act-panel{background:var(--white);border:1px solid var(--g200);border-radius:4px}
+.act-hd{padding:18px 22px;border-bottom:1px solid var(--g100)}
+.act-title{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:500;color:var(--black);letter-spacing:-.3px}
+.act-item{padding:14px 22px;border-bottom:1px solid var(--g50);display:flex;align-items:flex-start;gap:10px}
+.act-item:last-child{border-bottom:none}
+.act-dot{width:5px;height:5px;border-radius:50%;background:var(--black);margin-top:7px;flex-shrink:0}
+.act-dot.g{background:var(--gold)}
+.act-dot.gr{background:var(--g300)}
+.act-text{font-size:13px;color:var(--g600);line-height:1.55;flex:1}
+.act-text strong{color:var(--black);font-weight:600}
+.act-time{font-family:'DM Mono',monospace;font-size:9.5px;color:var(--g300);white-space:nowrap;margin-top:1px}
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:20px}
+.overlay.open{display:flex}
+.modal{background:var(--white);border-radius:4px;padding:32px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.18);animation:mIn .25s var(--ease)}
+@keyframes mIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--black);margin-bottom:5px;letter-spacing:-.3px}
+.modal-sub{font-size:13px;color:var(--g500);margin-bottom:18px;line-height:1.6}
+.mf{margin-bottom:12px}
+.mf label{display:block;font-size:10.5px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--g400);margin-bottom:5px}
+.mf textarea,.mf select{width:100%;background:var(--g50);border:1px solid var(--g200);border-radius:3px;padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--black);outline:none;resize:none;transition:border-color .2s}
+.mf textarea:focus,.mf select:focus{border-color:var(--black)}
+.modal-btns{display:flex;gap:9px}
+.m-cancel{flex:1;padding:10px;border-radius:3px;border:1px solid var(--g200);background:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--g600);cursor:pointer}
+.m-submit{flex:2;padding:10px;border-radius:3px;border:none;background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer}
+/* RESPONSIVE */
+@media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar{display:none}.main{padding:24px 20px}.g3{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}}
+@media(max-width:600px){.topbar{padding:0 16px}.t-nav{display:none}.g3,.g2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="coattic-landing.html" class="t-logo">CoAttic<span class="t-logo-dot"></span></a>
+  <nav class="t-nav">
+    <a href="coattic-dashboard.html" class="active">Founder Dashboard</a>
+    <a href="coattic-browse.html">Browse Members</a>
+    <a href="coattic-find-cofounder.html">Find Co-Founder</a>
+    <a href="coattic-discuss.html">Let's Discuss</a>
+  </nav>
+  <div class="t-right"><div class="t-avatar" id="tAvatar">AK</div></div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sb-label">Navigation</div>
+    <a href="coattic-dashboard.html" class="sb-link active">Founder Dashboard</a>
+    <a href="coattic-browse.html" class="sb-link">Browse Members</a>
+    <a href="coattic-find-cofounder.html" class="sb-link">Find Co-Founder</a>
+    <a href="coattic-discuss.html" class="sb-link">Let's Discuss</a>
+    <div class="sb-div"></div>
+    <div class="sb-label">Account</div>
+    <a href="coattic-onboarding.html" class="sb-link">Edit Profile</a>
+    <button class="sb-link" onclick="openModal()">Share Feedback</button>
+    <a href="coattic-landing.html" class="sb-link">Sign Out</a>
+    <div class="sb-bottom">
+      <div class="sbp">
+        <div class="sbp-av" id="sbAv">AK</div>
+        <div><div class="sbp-name" id="sbName">Member</div><div class="sbp-role" id="sbRole">Founder</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="ph">
+      <div><div class="ph-title">Founder Dashboard</div><div class="ph-sub">Your Readiness Score, vision statement, and active shortlist.</div></div>
+      <div class="ph-btns">
+        <a href="coattic-browse.html" class="btn btn-s">Browse Members</a>
+        <a href="coattic-find-cofounder.html" class="btn btn-p">Find Co-Founder →</a>
+      </div>
+    </div>
+
+    <!-- READINESS + VISION -->
+    <div class="g3" style="margin-bottom:20px">
+      <div class="rc">
+        <div class="c-ey">Readiness Score</div>
+        <div class="rc-score" id="rcScore">78</div>
+        <div class="rc-badge" id="rcBadge">Established</div>
+        <div class="rc-bars">
+          <div class="rc-row"><div class="rc-lbl">Profile</div><div class="rc-track"><div class="rc-fill" style="width:85%"></div></div></div>
+          <div class="rc-row"><div class="rc-lbl">Vision</div><div class="rc-track"><div class="rc-fill" style="width:72%"></div></div></div>
+          <div class="rc-row"><div class="rc-lbl">Answers</div><div class="rc-track"><div class="rc-fill" style="width:65%"></div></div></div>
+          <div class="rc-row"><div class="rc-lbl">Activity</div><div class="rc-track"><div class="rc-fill" style="width:50%"></div></div></div>
+        </div>
+      </div>
+      <div class="card vc" style="grid-column:span 2">
+        <div class="c-ey">Vision Statement</div>
+        <div class="vc-text" id="vcText">"Building the operating infrastructure for India's 100,000 coaching institutes — a ₹500Cr revenue business within 7 years, defining the default platform for admissions, payments, and student lifecycle management."</div>
+        <div class="vc-meta">
+          <div><div class="vc-venture" id="vcVenture">EduOS</div><div class="vc-stage" id="vcStage">MVP &nbsp;·&nbsp; EdTech &nbsp;·&nbsp; Bangalore</div></div>
+          <button onclick="window.location.href='coattic-onboarding.html'" style="background:none;border:none;font-size:12px;font-weight:600;color:var(--g400);cursor:pointer;transition:color .2s" onmouseover="this.style.color='#0A0A0A'" onmouseout="this.style.color='#A0A0A0'">Edit</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="g3">
+      <div class="card"><div class="c-ey">Active Shortlist</div><div class="c-val">3</div><div class="c-sub">of 5 slots &nbsp;·&nbsp; 2 available</div></div>
+      <div class="card"><div class="c-ey">Alignment Requests</div><div class="c-val">1</div><div class="c-sub">sent this week &nbsp;·&nbsp; 2 remaining</div></div>
+      <div class="card"><div class="c-ey">Profile Views</div><div class="c-val">14</div><div class="c-sub">past 7 days</div></div>
+    </div>
+
+    <!-- SHORTLIST PANEL -->
+    <div class="sl-panel">
+      <div class="sl-hd">
+        <div class="sl-title">Active Shortlist</div>
+        <div class="sl-meta">3 / 5 slots &nbsp;·&nbsp; Unused slots expire after 7 days</div>
+      </div>
+      <div class="sl-body" id="slBody">
+        <div class="sl-item">
+          <div class="sl-av">PS</div>
+          <div class="sl-info"><div class="sl-name">Priya Sharma</div><div class="sl-role">Co-Founder &nbsp;·&nbsp; Engineering / Technical &nbsp;·&nbsp; Mumbai</div></div>
+          <div class="sl-badge">Strong</div>
+          <div class="sl-expiry">5 days left</div>
+          <div class="sl-btns">
+            <button class="sl-btn sl-btn-p" onclick="window.location.href='coattic-find-cofounder.html'">Initiate Alignment</button>
+            <button class="sl-btn sl-btn-s" onclick="removeItem(this)">Remove</button>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-av" style="background:var(--g100);color:var(--g600)">RV</div>
+          <div class="sl-info"><div class="sl-name">Rohan Verma</div><div class="sl-role">Co-Founder &nbsp;·&nbsp; Product / Strategy &nbsp;·&nbsp; Bangalore</div></div>
+          <div class="sl-badge" style="color:var(--g600);background:var(--g100);border-color:var(--g200)">Established</div>
+          <div class="sl-expiry">3 days left</div>
+          <div class="sl-btns">
+            <button class="sl-btn sl-btn-p" onclick="window.location.href='coattic-find-cofounder.html'">Initiate Alignment</button>
+            <button class="sl-btn sl-btn-s" onclick="removeItem(this)">Remove</button>
+          </div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-av" style="background:var(--g100);color:var(--g600)">MN</div>
+          <div class="sl-info"><div class="sl-name">Meera Nair</div><div class="sl-role">Co-Founder &nbsp;·&nbsp; Growth / Marketing &nbsp;·&nbsp; Delhi NCR</div></div>
+          <div class="sl-badge">Strong</div>
+          <div class="sl-expiry">1 day left</div>
+          <div class="sl-btns">
+            <button class="sl-btn sl-btn-p" onclick="window.location.href='coattic-find-cofounder.html'">Initiate Alignment</button>
+            <button class="sl-btn sl-btn-s" onclick="removeItem(this)">Remove</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM TWO COL -->
+    <div class="g2">
+      <div class="card">
+        <div class="cc-hd"><div class="cc-title">Profile Completeness</div><div class="cc-pct">72%</div></div>
+        <div class="cc-track"><div class="cc-fill" style="width:72%"></div></div>
+        <div class="cc-items">
+          <div class="cc-item"><div class="cc-dot d">✓</div><div class="cc-text d">Account created</div></div>
+          <div class="cc-item"><div class="cc-dot d">✓</div><div class="cc-text d">Venture overview complete</div></div>
+          <div class="cc-item"><div class="cc-dot d">✓</div><div class="cc-text d">Vision statement added</div></div>
+          <div class="cc-item"><div class="cc-dot d">✓</div><div class="cc-text d">Strategic questions answered</div></div>
+          <div class="cc-item"><div class="cc-dot t"></div><div class="cc-text">Co-founder questions configured</div></div>
+          <div class="cc-item"><div class="cc-dot t"></div><div class="cc-text">First alignment request sent</div></div>
+        </div>
+      </div>
+      <div class="act-panel">
+        <div class="act-hd"><div class="act-title">Recent Activity</div></div>
+        <div class="act-item"><div class="act-dot g"></div><div class="act-text"><strong>Priya Sharma</strong> shortlisted. Alignment request pending.</div><div class="act-time">2h ago</div></div>
+        <div class="act-item"><div class="act-dot"></div><div class="act-text">Profile viewed by <strong>3 members</strong> matching your ambition scale.</div><div class="act-time">Yesterday</div></div>
+        <div class="act-item"><div class="act-dot g"></div><div class="act-text"><strong>Rohan Verma</strong> accepted alignment request. Awaiting responses.</div><div class="act-time">2 days ago</div></div>
+        <div class="act-item"><div class="act-dot gr"></div><div class="act-text">Readiness Score updated to <strong>78 — Established</strong>.</div><div class="act-time">3 days ago</div></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- FEEDBACK MODAL -->
+<div class="overlay" id="fbOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-title">Share Feedback</div>
+    <div class="modal-sub">Help us build CoAttic better. Every submission is reviewed.</div>
+    <div class="mf"><label>Type</label><select><option>Product Suggestion</option><option>Feature Request</option><option>Bug Report</option><option>General Feedback</option></select></div>
+    <div class="mf"><label>Message</label><textarea rows="4" id="fbMsg" placeholder="What would make CoAttic more valuable?"></textarea></div>
+    <div class="modal-btns">
+      <button class="m-cancel" onclick="closeModal()">Cancel</button>
+      <button class="m-submit" onclick="submitFb()">Submit Feedback</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL='https://holytxxscklzivoxzwmd.supabase.co';
+const SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvbHl0eHhzY2tseml2b3h6d21kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMjk3NDQsImV4cCI6MjA4NzYwNTc0NH0.5NUHjhHL5n8bIYeeUcGqEx8QOG1G0zJQfCHiyYPRltE';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+
+const roleLabels={founder:'Founder',cofounder:'Co-Founder',team:'Core Team',investor:'Investor'};
+
+function setInitials(name){
+  const i=name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()||'M';
+  document.getElementById('tAvatar').textContent=i;
+  document.getElementById('sbAv').textContent=i;
+}
+
+async function loadDashboard(){
+  // Check auth
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){window.location.href='coattic-auth.html';return;}
+
+  // Load profile from DB
+  const {data:profile,error}=await sb.from('profiles').select('*').eq('id',session.user.id).single();
+
+  if(error||!profile){
+    // Fallback to localStorage
+    const lp=JSON.parse(localStorage.getItem('coattic_profile')||'{}');
+    const name=localStorage.getItem('coattic_name')||'Member';
+    setInitials(name);
+    document.getElementById('sbName').textContent=name;
+    document.getElementById('sbRole').textContent=roleLabels[lp.role]||'Founder';
+    if(lp.score){document.getElementById('rcScore').textContent=lp.score;document.getElementById('rcBadge').textContent=lp.readiness||'Established';}
+    if(lp.idea){document.getElementById('vcText').textContent='"'+lp.idea+'"';}
+    return;
+  }
+
+  // Update localStorage with fresh data
+  localStorage.setItem('coattic_name',profile.name);
+  localStorage.setItem('coattic_email',profile.email);
+  localStorage.setItem('coattic_role',profile.role||'');
+  localStorage.setItem('coattic_uid',session.user.id);
+
+  // Render profile data
+  setInitials(profile.name);
+  document.getElementById('sbName').textContent=profile.name;
+  document.getElementById('sbRole').textContent=roleLabels[profile.role]||'Founder';
+  if(profile.score){
+    document.getElementById('rcScore').textContent=profile.score;
+    document.getElementById('rcBadge').textContent=profile.readiness||'Established';
+  }
+  if(profile.idea) document.getElementById('vcText').textContent='"'+profile.idea+'"';
+  if(profile.stage||profile.industry||profile.geography){
+    const meta=[profile.stage,profile.industry,profile.geography].filter(Boolean).join(' · ');
+    document.getElementById('vcStage').textContent=meta;
+  }
+
+  // Load shortlist
+  loadShortlist(session.user.id);
+}
+
+async function loadShortlist(uid){
+  const {data:shortlist}=await sb.from('shortlist')
+    .select('*, candidate:candidate_id(id,name,role,expertise,score,readiness,headline)')
+    .eq('founder_id',uid)
+    .order('created_at',{ascending:false});
+
+  if(!shortlist||shortlist.length===0) return;
+
+  const body=document.getElementById('slBody');
+  body.innerHTML=shortlist.map(item=>{
+    const c=item.candidate;
+    if(!c) return '';
+    const initials=(c.name||'').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+    const daysLeft=Math.max(0,Math.ceil((new Date(item.expires_at)-new Date())/86400000));
+    const badgeClass=c.readiness==='Strong'?'':'style="color:var(--g600);background:var(--g100);border-color:var(--g200)"';
+    return `<div class="sl-item">
+      <div class="sl-av">${initials}</div>
+      <div class="sl-info"><div class="sl-name">${c.name}</div><div class="sl-role">${roleLabels[c.role]||c.role} &nbsp;·&nbsp; ${c.expertise||''}</div></div>
+      <div class="sl-badge" ${badgeClass}>${c.readiness||'Established'}</div>
+      <div class="sl-expiry">${daysLeft} day${daysLeft!==1?'s':''} left</div>
+      <div class="sl-btns">
+        <button class="sl-btn sl-btn-p" onclick="window.location.href='coattic-find-cofounder.html'">Initiate Alignment</button>
+        <button class="sl-btn sl-btn-s" onclick="removeShortlist('${item.id}',this)">Remove</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function removeShortlist(id,btn){
+  await sb.from('shortlist').delete().eq('id',id);
+  const el=btn.closest('.sl-item');
+  el.style.transition='all .3s';el.style.opacity='0';el.style.transform='translateX(8px)';
+  setTimeout(()=>el.remove(),300);
+}
+
+function removeItem(btn){const el=btn.closest('.sl-item');el.style.transition='all .3s';el.style.opacity='0';el.style.transform='translateX(8px)';setTimeout(()=>el.remove(),300)}
+function openModal(){document.getElementById('fbOverlay').classList.add('open')}
+function closeModal(){document.getElementById('fbOverlay').classList.remove('open')}
+
+async function submitFb(){
+  const msg=document.getElementById('fbMsg').value.trim();
+  const type=document.querySelector('#fbOverlay select').value;
+  if(!msg){alert('Please enter your message.');return;}
+  closeModal();
+  const {data:{session}}=await sb.auth.getSession();
+  await sb.from('feedback').insert({
+    user_id:session?.user?.id||null,
+    type,message:msg
+  });
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0A0A0A;color:white;padding:11px 20px;border-radius:3px;font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;z-index:700;letter-spacing:.2px';
+  t.textContent='Feedback received. Thank you.';document.body.appendChild(t);setTimeout(()=>t.remove(),3000);
+}
+
+loadDashboard();
+</script>
+</body>
+</html>

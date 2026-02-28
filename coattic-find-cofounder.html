@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CoAttic — Find Co-Founder</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#0A0A0A;--white:#fff;--g50:#FAFAFA;--g100:#F4F4F4;--g200:#E8E8E8;--g300:#D0D0D0;--g400:#A0A0A0;--g500:#6B6B6B;--g600:#444444;--g700:#2A2A2A;--g800:#1A1A1A;--gold:#8B6914;--gold-lt:#C9A84C;--gold-xlt:#F5EDD6;--ease:cubic-bezier(.4,0,.2,1)}
+body{background:var(--g50);font-family:'DM Sans',sans-serif;color:var(--black);-webkit-font-smoothing:antialiased;min-height:100vh}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:200;height:60px;padding:0 40px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--g200)}
+.t-logo{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:var(--black);text-decoration:none;display:flex;align-items:flex-start}
+.t-logo-dot{width:4px;height:4px;border-radius:50%;background:var(--gold);margin-top:3px;margin-left:1px}
+.t-nav{display:flex;align-items:center;gap:32px}
+.t-nav a{font-size:13px;font-weight:500;color:var(--g500);text-decoration:none;transition:color .2s}
+.t-nav a:hover,.t-nav a.active{color:var(--black)}
+.t-right{display:flex;align-items:center;gap:12px}
+.t-avatar{width:32px;height:32px;border-radius:3px;background:var(--black);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:600;color:var(--white);cursor:pointer}
+.layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh;padding-top:60px}
+.sidebar{background:var(--white);border-right:1px solid var(--g200);padding:24px 0;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto;display:flex;flex-direction:column}
+.sb-label{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--g300);padding:0 20px;margin-bottom:6px;margin-top:18px}
+.sb-link{display:flex;align-items:center;padding:9px 20px;font-size:13px;font-weight:500;color:var(--g600);text-decoration:none;transition:all .15s;background:none;border:none;width:100%;text-align:left;cursor:pointer;letter-spacing:.1px;font-family:'DM Sans',sans-serif}
+.sb-link:hover{background:var(--g50);color:var(--black)}
+.sb-link.active{background:var(--g100);color:var(--black);font-weight:600}
+.sb-div{height:1px;background:var(--g100);margin:4px 0}
+.sb-bottom{margin-top:auto;padding:16px 20px;border-top:1px solid var(--g100)}
+.sbp{display:flex;align-items:center;gap:9px}
+.sbp-av{width:32px;height:32px;border-radius:3px;background:var(--black);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:600;color:var(--white)}
+.sbp-name{font-size:13px;font-weight:600;color:var(--black)}
+.sbp-role{font-size:11px;color:var(--g400)}
+.main{padding:36px 40px;max-width:900px}
+.ph{margin-bottom:28px}
+.ph-title{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;color:var(--black);letter-spacing:-.5px;margin-bottom:5px}
+.ph-sub{font-size:13px;color:var(--g500);line-height:1.65;max-width:560px}
+/* STEPS */
+.steps-indicator{display:flex;align-items:center;gap:0;margin-bottom:32px}
+.si-step{display:flex;align-items:center;gap:8px}
+.si-num{width:28px;height:28px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:11px;font-weight:500;transition:all .3s}
+.si-num.done{background:var(--black);color:var(--white)}
+.si-num.active{background:var(--black);color:var(--white)}
+.si-num.todo{background:var(--g100);border:1px solid var(--g200);color:var(--g400)}
+.si-label{font-size:12.5px;font-weight:600;color:var(--g400);transition:color .3s}
+.si-label.active{color:var(--black)}
+.si-label.done{color:var(--g500)}
+.si-line{width:32px;height:1px;background:var(--g200);margin:0 8px}
+/* SHORTLIST CARDS */
+.shortlist-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+.sl-card{background:var(--white);border:1.5px solid var(--g200);border-radius:4px;padding:16px;cursor:pointer;transition:all .2s;position:relative}
+.sl-card:hover{border-color:var(--g400)}
+.sl-card.sel{border-color:var(--black);background:var(--black)}
+.sl-card.sel .slc-name{color:var(--white)}
+.sl-card.sel .slc-role{color:var(--g500)}
+.sl-card.sel .slc-badge{opacity:.6}
+.slc-check{position:absolute;top:10px;right:10px;width:16px;height:16px;border-radius:2px;border:1.5px solid var(--g200);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;transition:all .2s}
+.sl-card.sel .slc-check{background:var(--white);border-color:var(--white);color:var(--black)}
+.slc-av{width:32px;height:32px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:600;color:var(--white);margin-bottom:10px}
+.slc-name{font-size:13px;font-weight:600;color:var(--black);margin-bottom:2px;transition:color .2s}
+.slc-role{font-size:11.5px;color:var(--g500);margin-bottom:6px;transition:color .2s}
+.slc-badge{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--gold);background:var(--gold-xlt);border:1px solid rgba(139,105,20,.15);padding:2px 7px;border-radius:2px;display:inline-block}
+/* QUESTION BANK */
+.section-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--black);letter-spacing:-.3px}
+.section-sub{font-size:13px;color:var(--g500);line-height:1.65;max-width:480px}
+.selected-counter{font-family:'DM Mono',monospace;font-size:10.5px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--g400);white-space:nowrap}
+.selected-counter strong{color:var(--black)}
+.notice{background:var(--white);border:1px solid var(--g200);border-radius:3px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:var(--g500);line-height:1.6;display:flex;gap:10px}
+.notice-rule{width:2px;height:28px;background:var(--gold);border-radius:2px;flex-shrink:0;margin-top:1px}
+.notice strong{color:var(--black)}
+/* Q BLOCKS */
+.q-bank{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.q-card{background:var(--white);border:1.5px solid var(--g200);border-radius:4px;padding:0;cursor:pointer;transition:border-color .2s;overflow:hidden}
+.q-card:hover{border-color:var(--g400)}
+.q-card.sel{border-color:var(--black)}
+.qc-header{display:flex;align-items:center;gap:12px;padding:16px 18px}
+.qc-sel-box{width:18px;height:18px;border-radius:2px;border:1.5px solid var(--g300);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;transition:all .2s}
+.q-card.sel .qc-sel-box{background:var(--black);border-color:var(--black);color:var(--white)}
+.qc-type{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--g400);flex-shrink:0}
+.qc-type.nature{color:var(--gold)}
+.qc-text{font-size:13.5px;font-weight:500;color:var(--black);line-height:1.5;flex:1}
+.qc-expand{font-family:'DM Mono',monospace;font-size:11px;color:var(--g400);flex-shrink:0;transition:transform .2s}
+.q-card.open .qc-expand{transform:rotate(180deg)}
+/* ANSWER + IMPORTANCE SELECTION */
+.qc-body{display:none;padding:0 18px 16px;border-top:1px solid var(--g100)}
+.q-card.open .qc-body{display:block;animation:bodyIn .22s var(--ease)}
+@keyframes bodyIn{from{opacity:0}to{opacity:1}}
+.qc-body-label{font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--g400);margin-top:14px;margin-bottom:9px}
+.qc-opts{display:flex;flex-direction:column;gap:6px}
+.qc-opt{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:3px;border:1.5px solid var(--g200);background:var(--g50);cursor:pointer;transition:all .18s;font-size:13px;color:var(--g600)}
+.qc-opt:hover{border-color:var(--g400);color:var(--black)}
+.qc-opt.pref{border-color:var(--black);background:var(--g100);color:var(--black);font-weight:600}
+.qc-opt-letter{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;color:var(--g300);width:14px;flex-shrink:0}
+.qc-opt.pref .qc-opt-letter{color:var(--black)}
+/* IMPORTANCE */
+.importance-row{display:flex;gap:8px;margin-top:12px}
+.imp-btn{flex:1;padding:8px 6px;border-radius:2px;border:1.5px solid var(--g200);background:var(--white);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--g500);cursor:pointer;transition:all .2s;text-align:center;letter-spacing:.1px}
+.imp-btn:hover{border-color:var(--g400);color:var(--black)}
+.imp-btn.sel{border-color:var(--black);background:var(--black);color:var(--white)}
+/* REVIEW STEP */
+.review-panel{background:var(--white);border:1px solid var(--g200);border-radius:4px;padding:28px;margin-bottom:20px}
+.rp-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--black);margin-bottom:16px;letter-spacing:-.3px}
+.rp-q-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.rp-q{background:var(--g50);border:1px solid var(--g200);border-radius:3px;padding:14px 16px}
+.rp-q-num{font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--g400);margin-bottom:6px}
+.rp-q-text{font-size:13.5px;font-weight:600;color:var(--black);margin-bottom:8px;line-height:1.4}
+.rp-q-answer{font-size:13px;color:var(--g600);margin-bottom:6px}
+.rp-q-answer strong{color:var(--black)}
+.rp-q-imp{font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:1px;text-transform:uppercase}
+.rp-q-imp.low{color:var(--g400)}
+.rp-q-imp.medium{color:var(--gold)}
+.rp-q-imp.high{color:var(--black)}
+/* RECIPIENT SECTION */
+.recipients{background:var(--white);border:1px solid var(--g200);border-radius:4px;padding:24px;margin-bottom:20px}
+.r-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:var(--black);margin-bottom:4px;letter-spacing:-.3px}
+.r-sub{font-size:13px;color:var(--g500);margin-bottom:16px;line-height:1.6}
+.r-list{display:flex;flex-direction:column;gap:8px}
+.r-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--g100);border-radius:3px;background:var(--g50)}
+.r-av{width:34px;height:34px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:600;color:var(--white);flex-shrink:0}
+.r-info{flex:1}
+.r-name{font-size:13px;font-weight:600;color:var(--black)}
+.r-role{font-size:11.5px;color:var(--g500)}
+.r-check{width:20px;height:20px;border-radius:2px;background:var(--black);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--white)}
+/* BTNS */
+.nav-btns{display:flex;gap:10px;margin-top:20px}
+.btn-back{padding:12px 22px;border-radius:3px;border:1.5px solid var(--g200);background:var(--white);font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;color:var(--g500);cursor:pointer;transition:all .2s}
+.btn-back:hover{border-color:var(--black);color:var(--black)}
+.btn-next{flex:1;padding:13px 24px;border-radius:3px;background:var(--black);color:var(--white);border:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:.3px;box-shadow:0 2px 12px rgba(0,0,0,.12);transition:all .2s}
+.btn-next:hover{background:var(--g800);transform:translateY(-1px)}
+.btn-next:disabled{opacity:.4;cursor:not-allowed;transform:none}
+/* SENT STATE */
+.sent-panel{display:none;text-align:center;padding:40px 20px}
+.sent-rule{width:1px;height:48px;background:var(--g200);margin:0 auto 32px}
+.sent-title{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;color:var(--black);margin-bottom:10px;letter-spacing:-.5px}
+.sent-sub{font-size:14px;color:var(--g500);max-width:420px;margin:0 auto 32px;line-height:1.75}
+.sent-recipients{display:flex;flex-direction:column;gap:8px;max-width:360px;margin:0 auto 28px}
+.sent-r{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--g100);border-radius:3px;background:var(--white)}
+.sent-r-av{width:32px;height:32px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:600;color:var(--white);flex-shrink:0}
+.sent-r-info{flex:1}
+.sent-r-name{font-size:13px;font-weight:600;color:var(--black)}
+.sent-r-status{font-size:11.5px;color:var(--g500)}
+.sent-cta{display:flex;flex-direction:column;gap:10px;max-width:320px;margin:0 auto}
+.sent-btn{display:block;padding:13px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;text-align:center;text-decoration:none;transition:all .2s;letter-spacing:.2px}
+.sent-btn-p{background:var(--black);color:var(--white);border:none;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+.sent-btn-p:hover{background:var(--g800)}
+.sent-btn-s{background:var(--white);color:var(--g600);border:1.5px solid var(--g200)}
+.sent-btn-s:hover{border-color:var(--black);color:var(--black)}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar{display:none}.main{padding:24px 20px;max-width:100%}.shortlist-row{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.topbar{padding:0 16px}.t-nav{display:none}.shortlist-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="coattic-landing.html" class="t-logo">CoAttic<span class="t-logo-dot"></span></a>
+  <nav class="t-nav">
+    <a href="coattic-dashboard.html">Founder Dashboard</a>
+    <a href="coattic-browse.html">Browse Members</a>
+    <a href="coattic-find-cofounder.html" class="active">Find Co-Founder</a>
+    <a href="coattic-discuss.html">Let's Discuss</a>
+  </nav>
+  <div class="t-right"><div class="t-avatar" id="tAvatar">AK</div></div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sb-label">Navigation</div>
+    <a href="coattic-dashboard.html" class="sb-link">Founder Dashboard</a>
+    <a href="coattic-browse.html" class="sb-link">Browse Members</a>
+    <a href="coattic-find-cofounder.html" class="sb-link active">Find Co-Founder</a>
+    <a href="coattic-discuss.html" class="sb-link">Let's Discuss</a>
+    <div class="sb-div"></div>
+    <div class="sb-label">Account</div>
+    <a href="coattic-onboarding.html" class="sb-link">Edit Profile</a>
+    <a href="coattic-landing.html" class="sb-link">Sign Out</a>
+    <div class="sb-bottom">
+      <div class="sbp">
+        <div class="sbp-av" id="sbAv">AK</div>
+        <div><div class="sbp-name" id="sbName">Member</div><div class="sbp-role">Founder</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- MAIN FLOW -->
+    <div id="mainFlow">
+      <div class="ph">
+        <div class="ph-title">Structured Alignment Engine</div>
+        <div class="ph-sub">Select your shortlisted candidates, configure 5 alignment questions with preferred answers and importance levels, then initiate the request. Candidates will answer your questions privately before a score is generated.</div>
+      </div>
+
+      <!-- STEPS -->
+      <div class="steps-indicator">
+        <div class="si-step"><div class="si-num active" id="sn1">1</div><div class="si-label active" id="sl1">Select Candidates</div></div>
+        <div class="si-line"></div>
+        <div class="si-step"><div class="si-num todo" id="sn2">2</div><div class="si-label" id="sl2">Configure Questions</div></div>
+        <div class="si-line"></div>
+        <div class="si-step"><div class="si-num todo" id="sn3">3</div><div class="si-label" id="sl3">Review &amp; Send</div></div>
+      </div>
+
+      <!-- STEP 1: SELECT CANDIDATES -->
+      <div id="step1">
+        <div class="section-hd">
+          <div>
+            <div class="section-title">Select Candidates</div>
+            <div class="section-sub" style="margin-top:6px">Select up to 5 members from your shortlist to send an alignment request to. Each will receive the same 5 questions.</div>
+          </div>
+        </div>
+        <div class="shortlist-row" id="candidateGrid">
+          <div class="sl-card" onclick="toggleCandidate(this,'Priya Sharma','PS','#1A1A1A')">
+            <div class="slc-check"></div>
+            <div class="slc-av" style="background:#1A1A1A">PS</div>
+            <div class="slc-name">Priya Sharma</div>
+            <div class="slc-role">Co-Founder &nbsp;·&nbsp; Technical</div>
+            <div class="slc-badge">Strong</div>
+          </div>
+          <div class="sl-card" onclick="toggleCandidate(this,'Rohan Verma','RV','#2A2A2A')">
+            <div class="slc-check"></div>
+            <div class="slc-av" style="background:#2A2A2A">RV</div>
+            <div class="slc-name">Rohan Verma</div>
+            <div class="slc-role">Co-Founder &nbsp;·&nbsp; Product</div>
+            <div class="slc-badge" style="color:var(--g600);background:var(--g100);border-color:var(--g200)">Established</div>
+          </div>
+          <div class="sl-card" onclick="toggleCandidate(this,'Meera Nair','MN','#1A1A1A')">
+            <div class="slc-check"></div>
+            <div class="slc-av" style="background:#1A1A1A">MN</div>
+            <div class="slc-name">Meera Nair</div>
+            <div class="slc-role">Co-Founder &nbsp;·&nbsp; Growth</div>
+            <div class="slc-badge">Strong</div>
+          </div>
+        </div>
+        <div class="nav-btns">
+          <button class="btn-next" id="btn1" onclick="goStep(2)" disabled>Configure Questions →</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: CONFIGURE QUESTIONS -->
+      <div id="step2" style="display:none">
+        <div class="section-hd">
+          <div>
+            <div class="section-title">Configure Alignment Questions</div>
+            <div class="section-sub" style="margin-top:6px">Select exactly 5 questions. For each, mark your preferred answer and assign an importance level. Candidates will see only the questions — never your preferred answers.</div>
+          </div>
+          <div class="selected-counter"><strong id="selCount">0</strong> / 5 selected</div>
+        </div>
+        <div class="notice"><div class="notice-rule"></div><div>Questions are drawn from the same bank used during onboarding. <strong>Strategic questions</strong> score 100 for match, 0 for no match. <strong>Nature questions</strong> score 100 for match, 10 for no match. Importance multiplier is applied after scoring.</div></div>
+        <div class="q-bank" id="qBank"></div>
+        <div class="nav-btns">
+          <button class="btn-back" onclick="goStep(1)">←</button>
+          <button class="btn-next" id="btn2" onclick="goStep(3)" disabled>Review &amp; Send →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: REVIEW -->
+      <div id="step3" style="display:none">
+        <div class="review-panel">
+          <div class="rp-title">Review Alignment Request</div>
+          <div id="reviewQList" class="rp-q-list"></div>
+          <div style="background:var(--g50);border:1px solid var(--g100);border-radius:3px;padding:14px 16px;font-size:13px;color:var(--g500);line-height:1.65">
+            <strong style="color:var(--black)">Scoring logic:</strong> MCQ answers weighted 40%. Keyword alignment 30%. Your manual review score 30%. Importance multiplier: Low ×1, Medium ×1.5, High ×2.
+          </div>
+        </div>
+        <div class="recipients">
+          <div class="r-title">Recipients</div>
+          <div class="r-sub">These members will receive a notification: <em>"You have been shortlisted for a structured alignment evaluation."</em> They can accept or decline.</div>
+          <div class="r-list" id="recipientList"></div>
+        </div>
+        <div class="nav-btns">
+          <button class="btn-back" onclick="goStep(2)">←</button>
+          <button class="btn-next" onclick="sendRequest()">Send Alignment Request →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SENT STATE -->
+    <div class="sent-panel" id="sentPanel">
+      <div class="sent-rule"></div>
+      <div class="sent-title">Alignment requests sent.</div>
+      <div class="sent-sub">Candidates have been notified. Once they accept and complete the questions, the alignment score will be calculated and made available to you privately.</div>
+      <div class="sent-recipients" id="sentRecipients"></div>
+      <div class="sent-cta">
+        <a href="coattic-dashboard.html" class="sent-btn sent-btn-p">Return to Founder Dashboard</a>
+        <a href="coattic-browse.html" class="sent-btn sent-btn-s">Continue Browsing Members</a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const name=localStorage.getItem('coattic_name')||'Member';
+const initials=name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()||'M';
+document.getElementById('tAvatar').textContent=initials;
+document.getElementById('sbAv').textContent=initials;
+document.getElementById('sbName').textContent=name;
+
+let selectedCandidates=[];
+let selectedQs={};// {qId: {text, answer, answerText, importance, type}}
+
+// QUESTION BANK
+const ALL_QS=[
+  {id:'s1',type:'Strategic',text:'How should the company scale in its early stages?',opts:['Steady, sustainable growth','Aggressive expansion with external capital','Capital-efficient iteration','Rapid scaling once product-market fit is confirmed']},
+  {id:'s2',type:'Strategic',text:'How should equity be structured between founders?',opts:['Equal split from day one','Based on role and long-term contribution','Vesting with performance milestones','Flexible — determined after initial traction']},
+  {id:'s3',type:'Strategic',text:'How should major strategic decisions be made?',opts:['Founder-led decisive action','Data-driven analysis before any decision','Joint consensus between all partners','Advisor-guided with defined escalation paths']},
+  {id:'s4',type:'Strategic',text:'How do you approach risk?',opts:['Structured and measured at every stage','Conservative — protect the downside first','Bold and aggressive when conviction is high','Adaptive — risk posture evolves with stage']},
+  {id:'s5',type:'Strategic',text:'What level of commitment do you expect from a co-founder from day one?',opts:['Full-time from Day 1, no exceptions','Transitioning to full-time within 3–6 months','Part-time until meaningful traction is proven','Flexible based on mutual agreement']},
+  {id:'s6',type:'Strategic',text:'What type of company are you committed to building?',opts:['Sustainable, independent, cash-generating','Venture-backed targeting global scale','Category-defining enterprise over a decade','Acquisition-optimised with defined exit horizon']},
+  {id:'s7',type:'Strategic',text:'What is your preferred long-term outcome?',opts:['Long-term ownership with dividends','IPO at significant scale','Strategic acquisition at the right valuation','Open to multiple paths depending on circumstances']},
+  {id:'n1',type:'Nature',text:'When facing high uncertainty or sustained pressure, you tend to:',opts:['Take immediate control and act decisively','Pause and analyse before acting','Seek counsel from trusted advisors','Slow down until clarity returns']},
+  {id:'n2',type:'Nature',text:'Your natural leadership orientation is:',opts:['Vision-driven and long-horizon strategic','Execution-focused and operationally rigorous','Collaborative — consensus-building','Independent — deliver outcomes, minimal coordination']},
+  {id:'n3',type:'Nature',text:'During a serious co-founder disagreement, you typically:',opts:['Hold your position until convinced otherwise','Adapt if the logic presented is stronger','Seek a structured compromise','Defer to the role with defined authority']},
+  {id:'n4',type:'Nature',text:'Your preferred work intensity is:',opts:['High intensity — long hours during build phase','Structured and disciplined — fixed productive hours','Flexible — outcome-focused, not time-focused','Balanced and sustainable for long-term durability']},
+  {id:'n5',type:'Nature',text:'How do you prefer to give and receive feedback?',opts:['Unfiltered and immediate','Structured, objective, evidence-based','Diplomatic and contextually considerate','Depends on the relationship']},
+];
+
+function renderQBank(){
+  const container=document.getElementById('qBank');
+  container.innerHTML=ALL_QS.map(q=>`
+    <div class="q-card" id="qcard-${q.id}">
+      <div class="qc-header" onclick="toggleQCard('${q.id}')">
+        <div class="qc-sel-box" id="qsel-${q.id}"></div>
+        <div class="qc-type ${q.type==='Nature'?'nature':''}">${q.type}</div>
+        <div class="qc-text">${q.text}</div>
+        <div class="qc-expand">▾</div>
+      </div>
+      <div class="qc-body" id="qbody-${q.id}">
+        <div class="qc-body-label">Select your preferred answer</div>
+        <div class="qc-opts">
+          ${q.opts.map((o,i)=>`<div class="qc-opt" onclick="selectPref('${q.id}',${i},'${escStr(o)}',event)"><span class="qc-opt-letter">${String.fromCharCode(65+i)}</span>${o}</div>`).join('')}
+        </div>
+        <div class="qc-body-label" style="margin-top:14px">Importance to you</div>
+        <div class="importance-row">
+          <button class="imp-btn sel" onclick="setImp('${q.id}','Low',this)">Low</button>
+          <button class="imp-btn" onclick="setImp('${q.id}','Medium',this)">Medium</button>
+          <button class="imp-btn" onclick="setImp('${q.id}','High',this)">High</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  // Init importance defaults
+  ALL_QS.forEach(q=>{if(!selectedQs[q.id])return;selectedQs[q.id].importance='Low';});
+}
+
+function escStr(s){return s.replace(/'/g,"\\'")}
+
+function toggleQCard(id){
+  const card=document.getElementById('qcard-'+id);
+  const body=document.getElementById('qbody-'+id);
+  const isOpen=card.classList.contains('open');
+  if(!isOpen){card.classList.add('open');body.style.display='block';}
+  else{card.classList.remove('open');body.style.display='none';}
+}
+
+function selectPref(qId,ansIdx,ansText,e){
+  e.stopPropagation();
+  const card=document.getElementById('qcard-'+qId);
+  card.querySelectorAll('.qc-opt').forEach(o=>o.classList.remove('pref'));
+  e.target.closest('.qc-opt').classList.add('pref');
+  const q=ALL_QS.find(x=>x.id===qId);
+  if(!selectedQs[qId]){
+    // Auto-select this question if not already selected
+    if(Object.keys(selectedQs).length<5){
+      selectedQs[qId]={text:q.text,answer:ansIdx,answerText:ansText,importance:'Low',type:q.type};
+      card.classList.add('sel');
+      document.getElementById('qsel-'+qId).textContent='✓';
+    } else {
+      selectedQs[qId]={text:q.text,answer:ansIdx,answerText:ansText,importance:'Low',type:q.type};
+      card.classList.add('sel');
+      document.getElementById('qsel-'+qId).textContent='✓';
+    }
+  } else {
+    selectedQs[qId].answer=ansIdx;
+    selectedQs[qId].answerText=ansText;
+  }
+  updateSelCount();
+}
+
+function setImp(qId,level,btn){
+  btn.closest('.importance-row').querySelectorAll('.imp-btn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  if(selectedQs[qId]) selectedQs[qId].importance=level;
+}
+
+function updateSelCount(){
+  const count=Object.keys(selectedQs).length;
+  document.getElementById('selCount').textContent=count;
+  document.getElementById('btn2').disabled=count<5;
+}
+
+function toggleCandidate(card,name,initials,color){
+  const idx=selectedCandidates.findIndex(c=>c.name===name);
+  if(idx>=0){selectedCandidates.splice(idx,1);card.classList.remove('sel');card.querySelector('.slc-check').textContent='';}
+  else{selectedCandidates.push({name,initials,color});card.classList.add('sel');card.querySelector('.slc-check').textContent='✓';}
+  document.getElementById('btn1').disabled=selectedCandidates.length===0;
+}
+
+function goStep(n){
+  [1,2,3].forEach(i=>{
+    document.getElementById('step'+i).style.display=i===n?'block':'none';
+    document.getElementById('sn'+i).className='si-num '+(i<n?'done':i===n?'active':'todo');
+    document.getElementById('sl'+i).className='si-label'+(i<n?' done':i===n?' active':'');
+  });
+  if(n===3) buildReview();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function buildReview(){
+  // Q list
+  const ql=document.getElementById('reviewQList');
+  ql.innerHTML=Object.entries(selectedQs).map(([id,q],i)=>`
+    <div class="rp-q">
+      <div class="rp-q-num">Question ${String(i+1).padStart(2,'0')} &nbsp;·&nbsp; ${q.type}</div>
+      <div class="rp-q-text">${q.text}</div>
+      <div class="rp-q-answer">Preferred answer: <strong>${q.answerText||'Not set'}</strong></div>
+      <div class="rp-q-imp ${(q.importance||'Low').toLowerCase()}">Importance: ${q.importance||'Low'}</div>
+    </div>
+  `).join('');
+  // Recipients
+  const rl=document.getElementById('recipientList');
+  rl.innerHTML=selectedCandidates.map(c=>`
+    <div class="r-item">
+      <div class="r-av" style="background:${c.color}">${c.initials}</div>
+      <div class="r-info"><div class="r-name">${c.name}</div><div class="r-role">Will receive 5 alignment questions</div></div>
+      <div class="r-check">✓</div>
+    </div>
+  `).join('');
+}
+
+function sendRequest(){
+  document.getElementById('mainFlow').style.display='none';
+  document.getElementById('sentPanel').style.display='block';
+  const sr=document.getElementById('sentRecipients');
+  sr.innerHTML=selectedCandidates.map(c=>`
+    <div class="sent-r">
+      <div class="sent-r-av" style="background:${c.color}">${c.initials}</div>
+      <div class="sent-r-info"><div class="sent-r-name">${c.name}</div><div class="sent-r-status">Notified — awaiting response</div></div>
+    </div>
+  `).join('');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// Init
+renderQBank();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(async()=>{
+const sb=window.supabase.createClient(
+  'https://holytxxscklzivoxzwmd.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvbHl0eHhzY2tseml2b3h6d21kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMjk3NDQsImV4cCI6MjA4NzYwNTc0NH0.5NUHjhHL5n8bIYeeUcGqEx8QOG1G0zJQfCHiyYPRltE'
+);
+const {data:{session}}=await sb.auth.getSession();
+if(!session){window.location.href='coattic-auth.html';return;}
+const n=session.user.user_metadata?.name||localStorage.getItem('coattic_name')||'Member';
+const i=n.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+const av=document.getElementById('tAvatar');
+const sav=document.getElementById('sbAv');
+const sn=document.getElementById('sbName');
+if(av)av.textContent=i;
+if(sav)sav.textContent=i;
+if(sn)sn.textContent=n;
+localStorage.setItem('coattic_name',n);
+localStorage.setItem('coattic_uid',session.user.id);
+})();
+</script>
+
+</body>
+</html>

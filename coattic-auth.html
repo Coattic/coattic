@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CoAttic — Apply for Membership</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#0A0A0A;--white:#FFFFFF;--g50:#FAFAFA;--g100:#F4F4F4;--g200:#E8E8E8;--g300:#D0D0D0;--g400:#A0A0A0;--g500:#6B6B6B;--g600:#444444;--g700:#2A2A2A;--g800:#1A1A1A;--gold:#8B6914;--gold-lt:#C9A84C;--gold-xlt:#F5EDD6;--danger:#C0392B;--ease:cubic-bezier(.4,0,.2,1)}
+body{background:var(--white);font-family:'DM Sans',sans-serif;color:var(--black);-webkit-font-smoothing:antialiased;min-height:100vh;display:grid;grid-template-columns:1fr 1fr}
+.left{background:var(--black);padding:56px;display:flex;flex-direction:column;min-height:100vh;position:relative;overflow:hidden}
+.left::before{content:'';position:absolute;inset:0;background-image:linear-gradient(var(--g800) 1px,transparent 1px),linear-gradient(90deg,var(--g800) 1px,transparent 1px);background-size:60px 60px;opacity:.4}
+.left-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--white);text-decoration:none;letter-spacing:.3px;position:relative;z-index:1;display:flex;align-items:flex-start}
+.left-logo-dot{width:4px;height:4px;border-radius:50%;background:var(--gold-lt);margin-top:3px;margin-left:1px}
+.left-content{position:relative;z-index:1;margin:auto 0}
+.left-eyebrow{font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold-lt);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.left-eyebrow::after{content:'';flex:0 0 20px;height:1px;background:var(--gold-lt);opacity:.4}
+.left-title{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,4vw,52px);font-weight:300;color:var(--white);letter-spacing:-1px;line-height:1.15;margin-bottom:16px}
+.left-title strong{font-weight:600}
+.left-title em{font-style:italic}
+.left-sub{font-size:14.5px;color:var(--g500);line-height:1.8;max-width:380px;margin-bottom:48px}
+.left-stats{display:flex;gap:40px}
+.ls-num{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:300;color:var(--white);letter-spacing:-1px;line-height:1}
+.ls-lbl{font-size:11.5px;color:var(--g600);margin-top:4px;font-weight:500}
+.right{display:flex;align-items:center;justify-content:center;padding:56px;min-height:100vh}
+.form-wrap{width:100%;max-width:380px}
+.back-link{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--g400);text-decoration:none;margin-bottom:32px;transition:color .2s}
+.back-link:hover{color:var(--black)}
+.tabs{display:flex;background:var(--g100);border-radius:4px;padding:3px;gap:3px;margin-bottom:28px}
+.tab{flex:1;padding:9px;border-radius:3px;border:none;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;transition:all .22s;background:transparent;color:var(--g400)}
+.tab.active{background:var(--white);color:var(--black);box-shadow:0 1px 6px rgba(0,0,0,.08)}
+.panel{display:none}
+.panel.active{display:block;animation:pIn .28s var(--ease)}
+@keyframes pIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.panel-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:500;color:var(--black);margin-bottom:4px;letter-spacing:-.3px}
+.panel-sub{font-size:13.5px;color:var(--g500);margin-bottom:24px;line-height:1.6}
+.panel-sub a{color:var(--black);font-weight:600;text-decoration:none}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--g400);margin-bottom:6px}
+.field input{width:100%;background:var(--g50);border:1px solid var(--g200);border-radius:3px;padding:12px 13px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--black);outline:none;transition:border-color .2s,box-shadow .2s}
+.field input:focus{border-color:var(--black);box-shadow:0 0 0 3px rgba(10,10,10,.06);background:var(--white)}
+.field input::placeholder{color:var(--g300)}
+.err-msg{font-size:11.5px;color:var(--danger);margin-top:5px;display:none}
+.err-msg.show{display:block}
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:44px}
+.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:14px;color:var(--g400);padding:4px;transition:color .2s}
+.pw-toggle:hover{color:var(--black)}
+.pw-strength-bar{display:flex;gap:3px;margin-top:8px}
+.pw-seg{height:2px;flex:1;border-radius:2px;background:var(--g200);transition:background .3s}
+.pw-seg.weak{background:var(--danger)}
+.pw-seg.fair{background:var(--gold)}
+.pw-seg.strong{background:#27AE60}
+.pw-strength-lbl{font-size:11px;color:var(--g400);margin-top:5px}
+.terms-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:18px}
+.terms-row input[type=checkbox]{width:15px;height:15px;accent-color:var(--black);margin-top:2px;flex-shrink:0;cursor:pointer}
+.terms-row span{font-size:12.5px;color:var(--g500);line-height:1.6}
+.terms-row a{color:var(--black);font-weight:600;text-decoration:none}
+.submit-btn{width:100%;padding:13px;border-radius:3px;border:none;background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:.3px;box-shadow:0 2px 12px rgba(0,0,0,.12);transition:background .2s,transform .15s,box-shadow .2s}
+.submit-btn:hover{background:var(--g800);transform:translateY(-1px)}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.forgot-btn{background:none;border:none;font-size:12.5px;color:var(--g400);cursor:pointer;padding:0;font-family:'DM Sans',sans-serif;transition:color .2s;display:block;text-align:right;width:100%;margin-top:-8px;margin-bottom:16px}
+.forgot-btn:hover{color:var(--black)}
+.alert-box{padding:11px 14px;border-radius:3px;font-size:13px;margin-bottom:14px;display:none;line-height:1.55}
+.alert-box.show{display:block}
+.alert-error{background:rgba(192,57,43,.07);border:1px solid rgba(192,57,43,.2);color:var(--danger)}
+.alert-success{background:rgba(39,174,96,.07);border:1px solid rgba(39,174,96,.2);color:#1A5C38}
+.success-panel{display:none;text-align:center;padding:16px 0}
+.success-icon{width:56px;height:56px;border-radius:3px;background:var(--black);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:24px;color:white}
+.success-panel h3{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:500;color:var(--black);margin-bottom:8px;letter-spacing:-.3px}
+.success-panel p{font-size:13.5px;color:var(--g500);line-height:1.75;margin-bottom:24px}
+.goto-btn{display:block;width:100%;padding:14px;border-radius:3px;background:var(--black);color:var(--white);text-decoration:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;text-align:center;letter-spacing:.3px;transition:background .2s,transform .15s}
+.goto-btn:hover{background:var(--g800);transform:translateY(-1px)}
+@media(max-width:768px){body{grid-template-columns:1fr}.left{display:none}.right{padding:40px 24px;align-items:flex-start;padding-top:56px}.form-wrap{max-width:100%}}
+</style>
+</head>
+<body>
+
+<div class="left">
+  <a href="coattic-landing.html" class="left-logo">CoAttic<span class="left-logo-dot"></span></a>
+  <div class="left-content">
+    <div class="left-eyebrow">Private Membership Network</div>
+    <h2 class="left-title">Identify the person<br>who <em>executes</em><br>like you do.</h2>
+    <p class="left-sub">CoAttic evaluates alignment before introduction. Two scoring systems. No shortcuts. Every connection is deliberate.</p>
+    <div class="left-stats">
+      <div><div class="ls-num">2,400+</div><div class="ls-lbl">Verified Members</div></div>
+      <div><div class="ls-num">340+</div><div class="ls-lbl">Teams Formed</div></div>
+      <div><div class="ls-num">91%</div><div class="ls-lbl">Alignment Rate</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="right">
+  <div class="form-wrap">
+    <a href="coattic-landing.html" class="back-link">← Back to CoAttic</a>
+
+    <div class="tabs" id="tabsRow">
+      <button class="tab active" id="tab-apply" onclick="switchTab('apply')">Apply for Membership</button>
+      <button class="tab" id="tab-access" onclick="switchTab('access')">Access Your Network</button>
+    </div>
+
+    <!-- APPLY -->
+    <div class="panel active" id="panel-apply">
+      <div class="panel-title">Create Your Account</div>
+      <div class="panel-sub">Already a member? <a href="#" onclick="switchTab('access');return false">Access your network</a></div>
+      <div class="alert-box alert-error" id="applyError"></div>
+      <div class="field"><label>Full Name</label><input type="text" id="regName" placeholder="Your full name"/></div>
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" id="regEmail" placeholder="your@email.com"/>
+        <div class="err-msg" id="errEmail">Please use a real email. Temporary addresses are not accepted.</div>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="regPw" placeholder="Create a password" oninput="checkStrength(this)"/>
+          <button class="pw-toggle" type="button" onclick="togglePw('regPw',this)">Show</button>
+        </div>
+        <div class="pw-strength-bar"><div class="pw-seg" id="s0"></div><div class="pw-seg" id="s1"></div><div class="pw-seg" id="s2"></div><div class="pw-seg" id="s3"></div></div>
+        <div class="pw-strength-lbl" id="pwLbl">Enter a password</div>
+        <div class="err-msg" id="errPw">Minimum 8 characters required.</div>
+      </div>
+      <div class="terms-row">
+        <input type="checkbox" id="terms"/>
+        <span>I agree to CoAttic's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+      </div>
+      <button class="submit-btn" id="applyBtn" onclick="handleApply()">Continue →</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="panel" id="panel-access">
+      <div class="panel-title">Access Your Network</div>
+      <div class="panel-sub">New to CoAttic? <a href="#" onclick="switchTab('apply');return false">Apply for membership</a></div>
+      <div class="alert-box alert-error" id="loginError"></div>
+      <div class="field"><label>Email Address</label><input type="email" id="loginEmail" placeholder="your@email.com"/></div>
+      <div class="field">
+        <label>Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="loginPw" placeholder="Your password"/>
+          <button class="pw-toggle" type="button" onclick="togglePw('loginPw',this)">Show</button>
+        </div>
+      </div>
+      <button class="forgot-btn" onclick="switchTab('forgot')">Forgot password?</button>
+      <button class="submit-btn" id="loginBtn" onclick="handleLogin()">Access Your Network →</button>
+    </div>
+
+    <!-- FORGOT -->
+    <div class="panel" id="panel-forgot">
+      <div class="panel-title">Reset Password</div>
+      <div class="panel-sub">Enter your email and we'll send a reset link.</div>
+      <div class="alert-box alert-success" id="forgotSuccess"></div>
+      <div class="alert-box alert-error" id="forgotError"></div>
+      <div class="field"><label>Email Address</label><input type="email" id="forgotEmail" placeholder="your@email.com"/></div>
+      <button class="submit-btn" id="forgotBtn" onclick="handleForgot()">Send Reset Link →</button>
+      <div style="margin-top:16px;text-align:center"><button class="forgot-btn" style="display:inline;width:auto" onclick="switchTab('access')">← Back to sign in</button></div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success-panel" id="successPanel">
+      <div class="success-icon">✓</div>
+      <h3>Application Received.</h3>
+      <p>Check your inbox for a verification email from CoAttic. Once verified, complete your profile to build your Readiness Score.</p>
+      <a href="coattic-onboarding.html" class="goto-btn">Complete Your Profile →</a>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL='https://holytxxscklzivoxzwmd.supabase.co';
+const SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvbHl0eHhzY2tseml2b3h6d21kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMjk3NDQsImV4cCI6MjA4NzYwNTc0NH0.5NUHjhHL5n8bIYeeUcGqEx8QOG1G0zJQfCHiyYPRltE';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+
+const BLOCKED=['mailinator.com','tempmail.com','guerrillamail.com','10minutemail.com','throwam.com','yopmail.com','trashmail.com','sharklasers.com','spam4.me','dispostable.com','maildrop.cc','fakeinbox.com','temp-mail.org','getnada.com','discard.email','spamgourmet.com','mytrashmail.com','trashmail.me','tempr.email','throwaway.email','mailnull.com','spamfree24.org'];
+
+function isDisposable(e){return BLOCKED.includes((e.split('@')[1]||'').toLowerCase())}
+function showErr(id,msg){const el=document.getElementById(id);el.textContent=msg;el.classList.add('show')}
+function hideErr(id){document.getElementById(id).classList.remove('show')}
+
+function switchTab(tab){
+  ['apply','access','forgot'].forEach(t=>{
+    document.getElementById('panel-'+t).classList.remove('active');
+    const tb=document.getElementById('tab-'+t);
+    if(tb)tb.classList.remove('active');
+  });
+  document.getElementById('successPanel').style.display='none';
+  document.getElementById('panel-'+tab).classList.add('active');
+  const tb=document.getElementById('tab-'+tab);
+  if(tb)tb.classList.add('active');
+}
+
+async function handleApply(){
+  const name=document.getElementById('regName').value.trim();
+  const email=document.getElementById('regEmail').value.trim();
+  const pw=document.getElementById('regPw').value;
+  const terms=document.getElementById('terms').checked;
+  hideErr('applyError');
+
+  if(!name){showErr('applyError','Please enter your full name.');return;}
+  if(!email.includes('@')){document.getElementById('errEmail').classList.add('show');return;}
+  else document.getElementById('errEmail').classList.remove('show');
+  if(isDisposable(email)){
+    document.getElementById('errEmail').textContent='Temporary email addresses are not accepted.';
+    document.getElementById('errEmail').classList.add('show');return;
+  }
+  if(pw.length<8){document.getElementById('errPw').classList.add('show');return;}
+  else document.getElementById('errPw').classList.remove('show');
+  if(!terms){showErr('applyError','Please accept the Terms of Service to proceed.');return;}
+
+  const btn=document.getElementById('applyBtn');
+  btn.disabled=true;btn.textContent='Creating account...';
+
+  try{
+    const {data,error}=await sb.auth.signUp({
+      email,password:pw,
+      options:{data:{name},emailRedirectTo:window.location.origin+'/coattic-auth.html'}
+    });
+    if(error)throw error;
+    localStorage.setItem('coattic_name',name);
+    localStorage.setItem('coattic_email',email);
+    document.getElementById('panel-apply').style.display='none';
+    document.getElementById('tabsRow').style.display='none';
+    document.getElementById('successPanel').style.display='block';
+  }catch(err){
+    btn.disabled=false;btn.textContent='Continue →';
+    const m=err.message||'';
+    showErr('applyError',m.includes('already registered')?'An account with this email already exists. Please sign in.':m||'Something went wrong. Please try again.');
+  }
+}
+
+async function handleLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pw=document.getElementById('loginPw').value;
+  hideErr('loginError');
+  if(!email||!pw){showErr('loginError','Please enter your email and password.');return;}
+
+  const btn=document.getElementById('loginBtn');
+  btn.disabled=true;btn.textContent='Accessing...';
+
+  try{
+    const {data,error}=await sb.auth.signInWithPassword({email,password:pw});
+    if(error)throw error;
+    localStorage.setItem('coattic_name',data.user.user_metadata?.name||email.split('@')[0]);
+    localStorage.setItem('coattic_email',email);
+    localStorage.setItem('coattic_uid',data.user.id);
+    const {data:profile}=await sb.from('profiles').select('role,score,readiness').eq('id',data.user.id).single();
+    if(profile){
+      localStorage.setItem('coattic_role',profile.role||'');
+      localStorage.setItem('coattic_profile',JSON.stringify(profile));
+      window.location.href='coattic-dashboard.html';
+    } else {
+      window.location.href='coattic-onboarding.html';
+    }
+  }catch(err){
+    btn.disabled=false;btn.textContent='Access Your Network →';
+    const m=err.message||'';
+    if(m.includes('Invalid'))showErr('loginError','Incorrect email or password.');
+    else if(m.includes('Email not confirmed'))showErr('loginError','Please verify your email address first. Check your inbox.');
+    else showErr('loginError',m||'Unable to sign in. Please try again.');
+  }
+}
+
+async function handleForgot(){
+  const email=document.getElementById('forgotEmail').value.trim();
+  hideErr('forgotError');hideErr('forgotSuccess');
+  if(!email.includes('@')){showErr('forgotError','Please enter a valid email address.');return;}
+  const btn=document.getElementById('forgotBtn');
+  btn.disabled=true;btn.textContent='Sending...';
+  try{
+    const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+'/coattic-auth.html'});
+    if(error)throw error;
+    const s=document.getElementById('forgotSuccess');
+    s.textContent='Reset link sent. Check your inbox.';s.classList.add('show');
+  }catch(err){
+    showErr('forgotError',err.message||'Could not send reset link.');
+  }finally{btn.disabled=false;btn.textContent='Send Reset Link →';}
+}
+
+function togglePw(id,btn){
+  const el=document.getElementById(id);
+  el.type=el.type==='text'?'password':'text';
+  btn.textContent=el.type==='text'?'Hide':'Show';
+}
+
+function checkStrength(input){
+  const pw=input.value;let s=0;
+  if(pw.length>=8)s++;if(/[A-Z]/.test(pw))s++;if(/[0-9]/.test(pw))s++;if(/[^A-Za-z0-9]/.test(pw))s++;
+  const cls=s<=1?'weak':s<=2?'fair':'strong';
+  const lbls=['','Weak','Fair','Good','Strong'];
+  ['s0','s1','s2','s3'].forEach((id,i)=>{const el=document.getElementById(id);el.className='pw-seg';if(i<s)el.classList.add(cls);});
+  document.getElementById('pwLbl').textContent=lbls[s]||'Enter a password';
+}
+
+// Redirect if already logged in
+(async()=>{
+  const {data:{session}}=await sb.auth.getSession();
+  if(session)window.location.href='coattic-dashboard.html';
+})();
+</script>
+</body>
+</html>

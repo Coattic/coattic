@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CoAttic — Complete Your Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#0A0A0A;--white:#FFFFFF;
+  --g50:#FAFAFA;--g100:#F4F4F4;--g200:#E8E8E8;--g300:#D0D0D0;
+  --g400:#A0A0A0;--g500:#6B6B6B;--g600:#444444;--g700:#2A2A2A;--g800:#1A1A1A;
+  --gold:#8B6914;--gold-lt:#C9A84C;--gold-xlt:#F5EDD6;
+  --ease:cubic-bezier(.4,0,.2,1);--spring:cubic-bezier(.34,1.56,.64,1);
+}
+body{background:var(--g50);font-family:'DM Sans',sans-serif;color:var(--black);-webkit-font-smoothing:antialiased;min-height:100vh}
+
+/* TOPBAR */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:200;height:60px;padding:0 40px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--g200)}
+.t-logo{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:var(--black);text-decoration:none;display:flex;align-items:flex-start}
+.t-logo-dot{width:4px;height:4px;border-radius:50%;background:var(--gold);margin-top:3px;margin-left:1px}
+.t-right{display:flex;align-items:center;gap:16px}
+.t-step{font-family:'DM Mono',monospace;font-size:10.5px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--g400)}
+.t-step strong{color:var(--black)}
+.t-skip{font-size:12.5px;font-weight:500;color:var(--g400);background:none;border:none;cursor:pointer;transition:color .2s}
+.t-skip:hover{color:var(--black)}
+
+/* PROGRESS */
+.progress{position:fixed;top:60px;left:0;right:0;z-index:199;height:2px;background:var(--g200)}
+.progress-fill{height:100%;background:var(--black);transition:width .5s var(--ease)}
+
+/* CANVAS */
+.canvas{position:relative;min-height:100vh;padding:96px 20px 80px;display:flex;align-items:flex-start;justify-content:center}
+.inner{width:100%;max-width:600px}
+
+/* STEP */
+.step{display:none;animation:sIn .38s var(--ease) both}
+.step.active{display:block}
+@keyframes sIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+.step-eyebrow{font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.step-eyebrow::after{content:'';flex:0 0 16px;height:1px;background:var(--gold-lt)}
+.step-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,40px);font-weight:400;color:var(--black);letter-spacing:-.8px;line-height:1.15;margin-bottom:8px}
+.step-title strong{font-weight:600}
+.step-title em{font-style:italic}
+.step-hint{font-size:14px;color:var(--g500);line-height:1.75;margin-bottom:28px;max-width:520px}
+
+/* ROLE CARDS */
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px}
+.role-card{background:var(--white);border:1.5px solid var(--g200);border-radius:4px;padding:24px 20px;cursor:pointer;transition:border-color .2s,box-shadow .2s,background .2s;position:relative}
+.role-card:hover{border-color:var(--g400)}
+.role-card.sel{border-color:var(--black);background:var(--black)}
+.role-card.sel .role-title{color:var(--white)}
+.role-card.sel .role-desc{color:var(--g500)}
+.role-card.sel .role-check{background:var(--white);border-color:var(--white)}
+.role-check{position:absolute;top:14px;right:14px;width:18px;height:18px;border-radius:2px;border:1.5px solid var(--g300);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;transition:all .2s}
+.role-num{font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--g300);margin-bottom:12px}
+.role-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--black);margin-bottom:6px;letter-spacing:-.2px;transition:color .2s}
+.role-desc{font-size:12.5px;color:var(--g500);line-height:1.6;transition:color .2s}
+
+/* FIELD */
+.field{margin-bottom:16px}
+.field label{display:block;font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--g400);margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;background:var(--white);border:1px solid var(--g200);border-radius:3px;padding:12px 13px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--black);outline:none;resize:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--black);box-shadow:0 0 0 3px rgba(10,10,10,.05);background:var(--white)}
+.field input::placeholder,.field textarea::placeholder{color:var(--g300)}
+.char-count{font-size:11px;color:var(--g400);text-align:right;margin-top:5px;font-family:'DM Mono',monospace}
+.field-hint{font-size:12px;color:var(--g400);margin-top:5px;line-height:1.6}
+
+/* TWO COL */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* OPTIONS (MCQ) */
+.opts{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+.opt{display:flex;align-items:flex-start;gap:12px;background:var(--white);border:1.5px solid var(--g200);border-radius:4px;padding:14px 16px;cursor:pointer;transition:border-color .2s,background .2s;position:relative}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt:hover{border-color:var(--g400)}
+.opt.sel{border-color:var(--black);background:var(--g50)}
+.opt-letter{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;color:var(--g300);width:16px;flex-shrink:0;margin-top:1px;transition:color .2s}
+.opt.sel .opt-letter{color:var(--black)}
+.opt-text{font-size:13.5px;color:var(--g600);line-height:1.5;transition:color .2s}
+.opt.sel .opt-text{color:var(--black);font-weight:500}
+.opt-check-mark{margin-left:auto;width:16px;height:16px;border-radius:2px;border:1.5px solid var(--g200);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;transition:all .2s;margin-top:1px}
+.opt.sel .opt-check-mark{background:var(--black);border-color:var(--black);color:var(--white)}
+
+/* QUESTION BLOCK */
+.q-block{background:var(--white);border:1px solid var(--g200);border-radius:4px;padding:24px;margin-bottom:12px}
+.q-block-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+.q-num{font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--g300)}
+.q-editable-badge{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--gold);background:var(--gold-xlt);border:1px solid rgba(139,105,20,.15);padding:2px 7px;border-radius:2px}
+.q-text{font-size:14.5px;font-weight:600;color:var(--black);line-height:1.5;margin-bottom:14px}
+.q-edit-area{width:100%;background:var(--g50);border:1px solid var(--g200);border-radius:3px;padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--black);outline:none;resize:none;transition:border-color .2s;display:none;margin-bottom:14px}
+.q-edit-area:focus{border-color:var(--black)}
+.q-edit-btn{background:none;border:none;font-size:12px;font-weight:600;color:var(--g400);cursor:pointer;transition:color .2s;padding:0;letter-spacing:.2px}
+.q-edit-btn:hover{color:var(--black)}
+
+/* SELECT CHIPS */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.chip{padding:8px 16px;border-radius:2px;border:1.5px solid var(--g200);background:var(--white);font-size:13px;font-weight:500;color:var(--g600);cursor:pointer;transition:all .18s;letter-spacing:.1px}
+.chip:hover{border-color:var(--g500);color:var(--black)}
+.chip.sel{border-color:var(--black);background:var(--black);color:var(--white)}
+
+/* NAV BUTTONS */
+.nav-btns{display:flex;gap:10px;margin-top:24px}
+.btn-back{flex:0;padding:12px 22px;border-radius:3px;border:1.5px solid var(--g200);background:var(--white);font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;color:var(--g500);cursor:pointer;transition:all .2s}
+.btn-back:hover{border-color:var(--black);color:var(--black)}
+.btn-next{flex:1;padding:12px 24px;border-radius:3px;background:var(--black);color:var(--white);border:none;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;letter-spacing:.3px;box-shadow:0 2px 12px rgba(0,0,0,.12);transition:background .2s,transform .15s}
+.btn-next:hover{background:var(--g800);transform:translateY(-1px)}
+.btn-next:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* VISION TEXTAREA */
+.vision-wrap{position:relative}
+.vision-limit{position:absolute;bottom:10px;right:12px;font-family:'DM Mono',monospace;font-size:10px;color:var(--g300)}
+
+/* AMBITION SCALE */
+.ambition-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.amb-opt{background:var(--white);border:1.5px solid var(--g200);border-radius:3px;padding:16px;cursor:pointer;transition:all .2s;text-align:left}
+.amb-opt:hover{border-color:var(--g500)}
+.amb-opt.sel{border-color:var(--black);background:var(--black)}
+.amb-opt.sel .amb-scale{color:var(--white)}
+.amb-opt.sel .amb-desc{color:var(--g500)}
+.amb-scale{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--black);margin-bottom:4px;transition:color .2s}
+.amb-desc{font-size:12px;color:var(--g500);line-height:1.5;transition:color .2s}
+
+/* COMPLETION */
+.completion{text-align:center;padding:40px 20px}
+.comp-rule{width:1px;height:48px;background:var(--g200);margin:0 auto 32px}
+.comp-score-wrap{display:inline-flex;align-items:baseline;gap:4px;margin-bottom:8px}
+.comp-score{font-family:'Cormorant Garamond',serif;font-size:80px;font-weight:300;color:var(--black);letter-spacing:-3px;line-height:1}
+.comp-score-label{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--g400)}
+.comp-readiness{display:inline-flex;align-items:center;gap:8px;background:var(--black);color:var(--white);padding:6px 16px;border-radius:2px;font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:24px}
+.comp-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:var(--black);margin-bottom:8px;letter-spacing:-.4px}
+.comp-sub{font-size:14px;color:var(--g500);line-height:1.75;margin-bottom:32px;max-width:420px;margin-left:auto;margin-right:auto}
+.comp-btns{display:flex;flex-direction:column;gap:10px;max-width:360px;margin:0 auto}
+.comp-primary{display:block;padding:14px;border-radius:3px;background:var(--black);color:var(--white);text-decoration:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;text-align:center;letter-spacing:.3px;box-shadow:0 2px 12px rgba(0,0,0,.12);transition:background .2s,transform .15s}
+.comp-primary:hover{background:var(--g800);transform:translateY(-1px)}
+.comp-secondary{display:block;padding:13px;border-radius:3px;border:1.5px solid var(--g200);background:var(--white);color:var(--g600);text-decoration:none;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;text-align:center;transition:all .2s}
+.comp-secondary:hover{border-color:var(--black);color:var(--black)}
+
+/* SECTION DIVIDER */
+.section-divider{display:flex;align-items:center;gap:12px;margin:24px 0 16px}
+.sd-label{font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--g400);white-space:nowrap}
+.sd-line{flex:1;height:1px;background:var(--g200)}
+
+/* PROGRESS NOTE */
+.progress-note{background:var(--white);border:1px solid var(--g200);border-radius:3px;padding:12px 14px;font-size:12.5px;color:var(--g500);line-height:1.6;margin-bottom:24px}
+.progress-note strong{color:var(--black)}
+
+@media(max-width:600px){
+  .topbar{padding:0 20px}
+  .canvas{padding-top:88px;padding-left:16px;padding-right:16px}
+  .role-grid,.two-col,.ambition-opts{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="coattic-landing.html" class="t-logo">CoAttic<span class="t-logo-dot"></span></a>
+  <div class="t-right">
+    <div class="t-step">Step <strong id="stepDisp">1</strong> of <strong id="totalDisp">6</strong></div>
+    <button class="t-skip" onclick="doSkip()">Save &amp; continue later</button>
+  </div>
+</div>
+<div class="progress"><div class="progress-fill" id="progFill" style="width:16%"></div></div>
+
+<div class="canvas">
+<div class="inner" id="mainInner">
+
+<!-- STEP 1: ROLE -->
+<div class="step active" id="step-role">
+  <div class="step-eyebrow">Step 1 — Foundation</div>
+  <h2 class="step-title">Select Your <em>Role.</em></h2>
+  <p class="step-hint">This determines your onboarding path and how other members see you. Choose the role that best reflects your intent on CoAttic.</p>
+  <div class="role-grid">
+    <div class="role-card" onclick="selectRole('founder',this)">
+      <div class="role-check" id="rc-founder"></div>
+      <div class="role-num">01</div>
+      <div class="role-title">Founder</div>
+      <div class="role-desc">You have a venture or concept. You are seeking an aligned co-founder or early execution partner.</div>
+    </div>
+    <div class="role-card" onclick="selectRole('cofounder',this)">
+      <div class="role-check" id="rc-cofounder"></div>
+      <div class="role-num">02</div>
+      <div class="role-title">Co-Founder</div>
+      <div class="role-desc">You bring deep expertise and are ready to commit to a venture with meaningful ownership.</div>
+    </div>
+    <div class="role-card" onclick="selectRole('team',this)">
+      <div class="role-check" id="rc-team"></div>
+      <div class="role-num">03</div>
+      <div class="role-title">Core Team Member</div>
+      <div class="role-desc">You thrive in early-stage environments and want to join a mission as a critical operator.</div>
+    </div>
+    <div class="role-card" onclick="selectRole('investor',this)">
+      <div class="role-check" id="rc-investor"></div>
+      <div class="role-num">04</div>
+      <div class="role-title">Investor</div>
+      <div class="role-desc">You are a capital partner focused on long-term company building alongside exceptional founders.</div>
+    </div>
+  </div>
+  <div class="nav-btns">
+    <button class="btn-next" id="nextRole" onclick="goNext('role')" disabled>Continue →</button>
+  </div>
+</div>
+
+<!-- STEP 2: VENTURE OVERVIEW (Founder / Co-Founder) -->
+<div class="step" id="step-venture">
+  <div class="step-eyebrow">Step 2 — Venture</div>
+  <h2 class="step-title">Venture <em>Overview.</em></h2>
+  <p class="step-hint">A clear venture profile is the foundation of your Readiness Score. Specificity signals seriousness.</p>
+  <div class="field">
+    <label>Venture Name</label>
+    <input type="text" id="ventureName" placeholder="What are you building?"/>
+  </div>
+  <div class="two-col">
+    <div class="field">
+      <label>Industry / Sector</label>
+      <select id="ventureIndustry">
+        <option value="">Select industry</option>
+        <option>EdTech</option>
+        <option>B2B SaaS</option>
+        <option>D2C / Consumer</option>
+        <option>FinTech</option>
+        <option>HealthTech</option>
+        <option>AI / ML</option>
+        <option>Logistics</option>
+        <option>AgriTech</option>
+        <option>PropTech</option>
+        <option>CleanTech</option>
+        <option>Deep Tech</option>
+        <option>Gaming</option>
+        <option>Others</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Current Stage</label>
+      <select id="ventureStage">
+        <option value="">Select stage</option>
+        <option>Idea</option>
+        <option>MVP</option>
+        <option>Revenue</option>
+        <option>Scaling</option>
+      </select>
+    </div>
+  </div>
+  <div id="othersField" style="display:none" class="field">
+    <label>Describe your industry / space (max 21 words)</label>
+    <input type="text" id="othersText" placeholder="Briefly describe what you are building..." maxlength="140"/>
+    <div class="field-hint">Max 21 words. Be specific.</div>
+  </div>
+  <div class="two-col">
+    <div class="field">
+      <label>Primary Geography</label>
+      <select id="ventureGeo">
+        <option value="">Select location</option>
+        <option>Bangalore</option>
+        <option>Mumbai</option>
+        <option>Delhi NCR</option>
+        <option>Pune</option>
+        <option>Hyderabad</option>
+        <option>Chennai</option>
+        <option>Kolkata</option>
+        <option>Other India City</option>
+        <option>Outside India</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Website (optional)</label>
+      <input type="text" id="ventureWebsite" placeholder="yourventure.com"/>
+    </div>
+  </div>
+  <div class="section-divider"><div class="sd-label">Vision Statement</div><div class="sd-line"></div></div>
+  <div class="field">
+    <label>Your Vision Statement</label>
+    <div class="vision-wrap">
+      <textarea id="visionStatement" rows="5" placeholder="Articulate where this venture will be in 5 years. What category will it define? What scale will it reach? Be specific — ambiguity signals unclear thinking." oninput="updateVisionCount()"></textarea>
+      <div class="vision-limit"><span id="visionCount">0</span>/150</div>
+    </div>
+    <div class="field-hint">Maximum 150 words. Visible on your Founder Dashboard after alignment is established.</div>
+  </div>
+  <div class="nav-btns">
+    <button class="btn-back" onclick="goBack('venture')">←</button>
+    <button class="btn-next" id="nextVenture" onclick="goNext('venture')">Continue →</button>
+  </div>
+</div>
+
+<!-- STEP 2b: PROFILE (Co-Founder / Team / Investor background) -->
+<div class="step" id="step-background">
+  <div class="step-eyebrow">Step 2 — Background</div>
+  <h2 class="step-title">Professional <em>Background.</em></h2>
+  <p class="step-hint">Accurate information directly determines the quality of your Curated Introductions.</p>
+  <div class="two-col">
+    <div class="field">
+      <label>Primary Expertise</label>
+      <select id="bgExpertise">
+        <option value="">Select expertise</option>
+        <option>Engineering / Technical</option>
+        <option>Product / Strategy</option>
+        <option>Growth / Marketing</option>
+        <option>Operations</option>
+        <option>Finance</option>
+        <option>Design</option>
+        <option>Sales / BD</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Years of Experience</label>
+      <select id="bgYears">
+        <option value="">Select range</option>
+        <option>0–2 years</option>
+        <option>3–5 years</option>
+        <option>5–10 years</option>
+        <option>10+ years</option>
+      </select>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="field">
+      <label>Startup Experience</label>
+      <select id="bgStartup">
+        <option value="">Select</option>
+        <option>Early-stage startup</option>
+        <option>Growth-stage startup</option>
+        <option>Corporate background only</option>
+        <option>No startup experience</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Current Status</label>
+      <select id="bgStatus">
+        <option value="">Select</option>
+        <option>Employed full-time</option>
+        <option>Freelance / Consultant</option>
+        <option>Between roles</option>
+        <option>Student</option>
+      </select>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="field">
+      <label>Availability</label>
+      <select id="bgAvailability">
+        <option value="">Select</option>
+        <option>Full-time commitment</option>
+        <option>Part-time (20+ hrs/week)</option>
+        <option>Limited hours</option>
+        <option>Exploring opportunities</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Work Preference</label>
+      <select id="bgWork">
+        <option value="">Select</option>
+        <option>Remote</option>
+        <option>Hybrid</option>
+        <option>On-site</option>
+        <option>Flexible</option>
+      </select>
+    </div>
+  </div>
+  <div class="section-divider"><div class="sd-label">Your Headline</div><div class="sd-line"></div></div>
+  <div class="field">
+    <label>1-Line Professional Headline (max 120 characters)</label>
+    <input type="text" id="bgHeadline" placeholder="e.g. Full-stack engineer with 6 years building B2B SaaS products in fintech." maxlength="120"/>
+    <div class="field-hint">Visible on your profile card in limited browse view.</div>
+  </div>
+  <div class="nav-btns">
+    <button class="btn-back" onclick="goBack('background')">←</button>
+    <button class="btn-next" id="nextBg" onclick="goNext('background')">Continue →</button>
+  </div>
+</div>
+
+<!-- STEP 3: AMBITION SCALE -->
+<div class="step" id="step-ambition">
+  <div class="step-eyebrow">Step 3 — Ambition</div>
+  <h2 class="step-title">Define Your <em>Scale.</em></h2>
+  <p class="step-hint">Clarity of ambition is the primary matching signal on CoAttic. Vague ambition produces misaligned introductions. Be precise about what you are building toward.</p>
+  <div class="ambition-opts" id="ambitionOpts">
+    <div class="amb-opt" onclick="selectAmb(this,'lifestyle')">
+      <div class="amb-scale">₹1Cr – ₹10Cr ARR</div>
+      <div class="amb-desc">A profitable, sustainable business. Strong cashflow. No external capital required.</div>
+    </div>
+    <div class="amb-opt" onclick="selectAmb(this,'regional')">
+      <div class="amb-scale">₹10Cr – ₹100Cr ARR</div>
+      <div class="amb-desc">A dominant regional or niche player. Likely requires some external capital.</div>
+    </div>
+    <div class="amb-opt" onclick="selectAmb(this,'national')">
+      <div class="amb-scale">₹100Cr – ₹1,000Cr ARR</div>
+      <div class="amb-desc">A national market leader. Venture-scale ambition. Requires institutional capital.</div>
+    </div>
+    <div class="amb-opt" onclick="selectAmb(this,'global')">
+      <div class="amb-scale">$100M+ ARR</div>
+      <div class="amb-desc">A global category-defining company. IPO or acquisition at scale.</div>
+    </div>
+  </div>
+  <div class="field" style="margin-top:16px">
+    <label>Target Timeline</label>
+    <select id="ambTimeline">
+      <option value="">When do you plan to reach this?</option>
+      <option>Within 3 years</option>
+      <option>3–5 years</option>
+      <option>5–10 years</option>
+      <option>10+ years</option>
+    </select>
+  </div>
+  <div class="nav-btns">
+    <button class="btn-back" onclick="goBack('ambition')">←</button>
+    <button class="btn-next" id="nextAmbition" onclick="goNext('ambition')" disabled>Continue →</button>
+  </div>
+</div>
+
+<!-- STEP 4: STRATEGIC QUESTIONS (Founder + Co-Founder) -->
+<div class="step" id="step-strategic">
+  <div class="step-eyebrow">Step 4 — Strategic Alignment</div>
+  <h2 class="step-title">Strategic <em>Questions.</em></h2>
+  <p class="step-hint">These questions build your Readiness Score and form the basis of alignment evaluation. Pre-filled with standard positions — edit any question or answer to reflect your actual thinking.</p>
+  <div class="progress-note">These are your answers. They are compared against potential co-founders' answers during the structured alignment process. <strong>Answer honestly.</strong></div>
+  <div id="strategicQs"></div>
+  <div class="nav-btns">
+    <button class="btn-back" onclick="goBack('strategic')">←</button>
+    <button class="btn-next" id="nextStrategic" onclick="goNext('strategic')">Continue →</button>
+  </div>
+</div>
+
+<!-- STEP 5: NATURE QUESTIONS (Founder + Co-Founder) -->
+<div class="step" id="step-nature">
+  <div class="step-eyebrow">Step 5 — Operating Philosophy</div>
+  <h2 class="step-title">How You <em>Operate.</em></h2>
+  <p class="step-hint">These questions reveal how you function under pressure, in conflict, and within a leadership dynamic. There are no correct answers — only honest ones.</p>
+  <div id="natureQs"></div>
+  <div class="nav-btns">
+    <button class="btn-back" onclick="goBack('nature')">←</button>
+    <button class="btn-next" id="nextNature" onclick="goNext('nature')">Continue →</button>
+  </div>
+</div>
+
+<!-- STEP 4b: CORE TEAM STARTUP READINESS -->
+<div class="step" id="step-readiness">
+  <div class="step-eyebrow">Step 4 — Startup Readiness</div>
+  <h2 class="step-title">Readiness <em>Assessment.</em></h2>
+  <p class="step-hint">Early-stage environments demand a different mindset. These questions determine how we position you to founders seeking core team members.</p>
+  <div id="readinessQs"></div>
+  <div class="nav-btns">
+    <button class="btn-back" onclick="goBack('readiness')">←</button>
+    <button class="btn-next" id="nextReadiness" onclick="goNext('readiness')">Continue →</button>
+  </div>
+</div>
+
+<!-- STEP 4c: INVESTOR -->
+<div class="step" id="step-investor">
+  <div class="step-eyebrow">Step 4 — Investment Profile</div>
+  <h2 class="step-title">Investment <em>Philosophy.</em></h2>
+  <p class="step-hint">Help founders understand your focus and involvement preference before requesting an introduction.</p>
+  <div class="field">
+    <label>Investment Stage Focus</label>
+    <div class="opts" id="invStageOpts">
+      <label class="opt" onclick="selectSingleOpt(this,'invStage','preseed')"><input type="radio" name="invStage" value="preseed"/><span class="opt-letter">A</span><span class="opt-text">Pre-Seed — I back founders and ideas before traction. Pure conviction.</span><span class="opt-check-mark">✓</span></label>
+      <label class="opt" onclick="selectSingleOpt(this,'invStage','seed')"><input type="radio" name="invStage" value="seed"/><span class="opt-letter">B</span><span class="opt-text">Seed — I need a prototype, early users, or initial revenue signal.</span><span class="opt-check-mark">✓</span></label>
+      <label class="opt" onclick="selectSingleOpt(this,'invStage','angel')"><input type="radio" name="invStage" value="angel"/><span class="opt-letter">C</span><span class="opt-text">Angel — Relationship-driven. I mentor as much as I fund.</span><span class="opt-check-mark">✓</span></label>
+      <label class="opt" onclick="selectSingleOpt(this,'invStage','mentor')"><input type="radio" name="invStage" value="mentor"/><span class="opt-letter">D</span><span class="opt-text">Mentor-Investor — I bring operational value, not only capital.</span><span class="opt-check-mark">✓</span></label>
+    </div>
+  </div>
+  <div class="two-col" style="margin-top:16px">
+    <div class="field">
+      <label>Typical Ticket Size</label>
+      <select id="invTicket">
+        <option value="">Select range</option>
+        <option>Under ₹25L</option>
+        <option>₹25L – ₹1Cr</option>
+        <option>₹1Cr – ₹5Cr</option>
+        <option>₹5Cr+</option>
+        <option>Prefer not to disclose</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Sector Focus</label>
+      <select id="invSector">
+        <option value="">Select</option>
+        <option>Sector agnostic</option>
+        <option>Tech / SaaS</option>
+        <option>Consumer / D2C</option>
+        <option>Deep Tech</option>
+        <option>FinTech</option>
+        <option>HealthTech</option>
+        <option>Other</option>
+      </select>
+    </div>
+  </div>
+  <div class="nav-btns">
+    <button class="btn-back" onclick="goBack('investor')">←</button>
+    <button class="btn-next" id="nextInvestor" onclick="goNext('investor')">Continue →</button>
+  </div>
+</div>
+
+<!-- COMPLETION -->
+<div class="step" id="step-done">
+  <div class="completion">
+    <div class="comp-rule"></div>
+    <div class="comp-score-wrap">
+      <div class="comp-score" id="compScore">0</div>
+    </div>
+    <div class="comp-score-label" style="margin-bottom:16px">Readiness Score</div>
+    <div class="comp-readiness" id="compReadiness">Calculating...</div>
+    <div class="comp-title" id="compTitle">Your profile is live.</div>
+    <div class="comp-sub" id="compSub">You are now discoverable to members with aligned ambition and operating philosophy.</div>
+    <div class="comp-btns" id="compBtns"></div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script>
+// ── DATA ──
+// Supabase loaded via CDN in head
+const SUPABASE_URL='https://holytxxscklzivoxzwmd.supabase.co';
+const SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvbHl0eHhzY2tseml2b3h6d21kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMjk3NDQsImV4cCI6MjA4NzYwNTc0NH0.5NUHjhHL5n8bIYeeUcGqEx8QOG1G0zJQfCHiyYPRltE';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+const S={role:localStorage.getItem('coattic_role')||null,ambition:null,answers:{},strategicAnswers:{},natureAnswers:{},readinessAnswers:{}};
+
+// Step flows per role
+const FLOWS={
+  founder:  ['role','venture','ambition','strategic','nature','done'],
+  cofounder:['role','background','ambition','strategic','nature','done'],
+  team:     ['role','background','ambition','readiness','done'],
+  investor: ['role','background','investor','done']
+};
+
+let curStep='role';
+
+function getFlow(){return FLOWS[S.role]||FLOWS.founder}
+function getTotal(){return getFlow().length-1}// exclude 'done'
+
+function showStep(id){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('step-'+id).classList.add('active');
+  const flow=getFlow();
+  const idx=flow.indexOf(id);
+  const total=getTotal();
+  const dispIdx=Math.min(idx+1,total);
+  document.getElementById('stepDisp').textContent=dispIdx;
+  document.getElementById('totalDisp').textContent=total;
+  const pct=id==='done'?100:((idx+1)/total*100).toFixed(0);
+  document.getElementById('progFill').style.width=pct+'%';
+  curStep=id;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function goNext(from){
+  const flow=getFlow();
+  const idx=flow.indexOf(from);
+  if(idx<flow.length-1) showStep(flow[idx+1]);
+  if(flow[idx+1]==='done') buildCompletion();
+}
+function goBack(from){
+  const flow=getFlow();
+  const idx=flow.indexOf(from);
+  if(idx>0) showStep(flow[idx-1]);
+}
+
+// ── ROLE ──
+function selectRole(role,card){
+  S.role=role;
+  localStorage.setItem('coattic_role',role);
+  document.querySelectorAll('.role-card').forEach(c=>{c.classList.remove('sel');c.querySelector('.role-check').textContent='';});
+  card.classList.add('sel');
+  card.querySelector('.role-check').textContent='✓';
+  document.getElementById('nextRole').disabled=false;
+  // Re-render questions for the role
+  renderStrategicQs();
+  renderNatureQs();
+  renderReadinessQs();
+  // Update total steps display
+  document.getElementById('totalDisp').textContent=getTotal();
+}
+
+// ── AMBITION ──
+function selectAmb(el,val){
+  S.ambition=val;
+  document.querySelectorAll('.amb-opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('nextAmbition').disabled=false;
+}
+
+// ── SINGLE OPT (MCQ) ──
+function selectSingleOpt(card,group,val){
+  card.closest('.opts').querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));
+  card.classList.add('sel');
+  S.answers[group]=val;
+}
+
+// ── VISION COUNT ──
+function updateVisionCount(){
+  const words=document.getElementById('visionStatement').value.trim().split(/\s+/).filter(Boolean);
+  if(words.length>150){
+    const trimmed=words.slice(0,150).join(' ');
+    document.getElementById('visionStatement').value=trimmed;
+  }
+  document.getElementById('visionCount').textContent=Math.min(words.length,150);
+}
+
+// ── INDUSTRY OTHERS ──
+document.getElementById('ventureIndustry').addEventListener('change',function(){
+  document.getElementById('othersField').style.display=this.value==='Others'?'block':'none';
+});
+
+// ── STRATEGIC QUESTIONS DATA ──
+const STRATEGIC_QS=[
+  {id:'s1',q:'How should the company scale in its early stages?',opts:['Focus on steady, sustainable growth','Scale aggressively with external capital','Remain capital-efficient and iterate methodically','Scale rapidly once product-market fit is confirmed']},
+  {id:'s2',q:'How should equity be structured between founders?',opts:['Equal split from day one','Based on role and long-term contribution','Vesting with performance milestones','Flexible — determined after initial traction']},
+  {id:'s3',q:'How should major strategic decisions be made?',opts:['Founder-led decisive action','Data-driven analysis before any decision','Joint consensus between all partners','Advisor-guided with defined escalation paths']},
+  {id:'s4',q:'How do you approach calculated risk?',opts:['Structured and measured at every stage','Conservative — protect the downside first','Bold and aggressive when conviction is high','Adaptive — risk posture evolves with stage']},
+  {id:'s5',q:'What level of commitment do you expect from a co-founder from day one?',opts:['Full-time from Day 1, no exceptions','Transitioning to full-time within 3–6 months','Part-time until meaningful traction is proven','Flexible based on mutual agreement and circumstances']},
+  {id:'s6',q:'Should founders invest personal capital into the venture?',opts:['Yes — financial commitment signals conviction','Only if the individual is financially in a position to','Not necessary if execution contribution is strong','Dependent on stage, round structure, and risk level']},
+  {id:'s7',q:'How should co-founder disagreements be resolved?',opts:['Direct and immediate confrontation of the issue','Structured debate supported by data and evidence','Engage a trusted neutral advisor for mediation','The defined decision-maker makes the final call']},
+  {id:'s8',q:'What type of company are you committed to building?',opts:['A sustainable, independent, cash-generating business','A venture-backed company targeting global scale','A category-defining enterprise built over a decade','An acquisition-optimised venture with a defined exit horizon']},
+  {id:'s9',q:'When building the early team, your first priority is:',opts:['Cultural and values alignment','Technical excellence and domain depth','Speed of execution and output volume','Cost efficiency and lean operations']},
+  {id:'s10',q:'What is your preferred long-term outcome for this venture?',opts:['Long-term ownership with dividends and distributions','IPO at significant scale','Strategic acquisition at the right valuation','Open to multiple paths depending on circumstances']},
+];
+
+const NATURE_QS=[
+  {id:'n1',q:'When facing high uncertainty or sustained pressure, you tend to:',opts:['Take immediate control and act decisively','Pause systematically and analyse before acting','Seek counsel from trusted advisors','Slow down until clarity and confidence return']},
+  {id:'n2',q:'How do you prefer to give and receive direct feedback?',opts:['Unfiltered and immediate — no softening','Structured, objective, and evidence-based','Diplomatic and contextually considerate','Depends on the relationship and situation at hand']},
+  {id:'n3',q:'Your natural leadership orientation is:',opts:['Vision-driven and long-horizon strategic','Execution-focused and operationally rigorous','Collaborative — consensus-building across the team','Independent — deliver outcomes, minimal coordination']},
+  {id:'n4',q:'During a serious co-founder disagreement, you typically:',opts:['Hold your position until convinced otherwise','Adapt immediately if the logic presented is stronger','Seek a structured compromise that works for both parties','Defer to the role with defined authority over that domain']},
+  {id:'n5',q:'Your preferred work intensity is:',opts:['High intensity — long hours are the norm during build phase','Structured and disciplined — fixed but productive hours','Flexible — outcome-focused, not time-focused','Balanced and sustainable for long-term durability']},
+];
+
+const READINESS_QS=[
+  {id:'r1',q:'Your comfort level with early-stage ambiguity and chaos:',opts:['Highly comfortable — uncertainty energises me','Comfortable if there is a basic operating structure','Prefer stable, defined environments','Entirely dependent on the quality of leadership']},
+  {id:'r2',q:'Your preferred work intensity in an early-stage environment:',opts:['High intensity — early-stage requires maximum output','Structured discipline — focused hours, consistent delivery','Flexible and outcome-focused — results matter, not hours','Balanced — sustainable pace for long-term performance']},
+  {id:'r3',q:'How do you approach ownership of your responsibilities?',opts:['Take full ownership, often beyond the defined role','Execute the defined role with excellence and focus','Collaborate closely — ownership is shared with the team','Complete assigned tasks efficiently and move on']},
+  {id:'r4',q:'Are you open to below-market compensation in exchange for equity?',opts:['Yes — if the equity upside is credible','Only if a minimum cash floor is guaranteed','No — I require market-rate compensation','Open to discussion based on the specific opportunity']},
+  {id:'r5',q:'What matters more to you — title or the depth of what you are learning?',opts:['Learning — always, without exception','Both matter equally to my career trajectory','Title signals seniority and opens future opportunities','Impact and ownership matter more than either']},
+];
+
+function renderQs(qArr,containerId,groupPrefix){
+  const container=document.getElementById(containerId);
+  container.innerHTML=qArr.map((q,i)=>`
+    <div class="q-block" id="qblock-${q.id}">
+      <div class="q-block-header">
+        <div class="q-num">${String(i+1).padStart(2,'0')}</div>
+        <div class="q-editable-badge">Editable</div>
+      </div>
+      <div class="q-text" id="qtxt-${q.id}">${q.q}</div>
+      <textarea class="q-edit-area" id="qedit-${q.id}" rows="2">${q.q}</textarea>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--g300)">Select your answer</div>
+        <button class="q-edit-btn" onclick="toggleEdit('${q.id}')">Edit question</button>
+      </div>
+      <div class="opts">
+        ${q.opts.map((o,j)=>`
+          <label class="opt" onclick="selectQAns('${q.id}',${j},this)">
+            <input type="radio" name="${q.id}" value="${j}"/>
+            <span class="opt-letter">${String.fromCharCode(65+j)}</span>
+            <span class="opt-text">${o}</span>
+            <span class="opt-check-mark">✓</span>
+          </label>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderStrategicQs(){renderQs(STRATEGIC_QS,'strategicQs','s')}
+function renderNatureQs(){renderQs(NATURE_QS,'natureQs','n')}
+function renderReadinessQs(){renderQs(READINESS_QS,'readinessQs','r')}
+
+function toggleEdit(qid){
+  const txt=document.getElementById('qtxt-'+qid);
+  const area=document.getElementById('qedit-'+qid);
+  const showing=area.style.display==='block';
+  area.style.display=showing?'none':'block';
+  if(!showing){txt.style.display='none';area.focus();}
+  else{txt.textContent=area.value;txt.style.display='block';}
+}
+
+function selectQAns(qid,ansIdx,card){
+  card.closest('.opts').querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));
+  card.classList.add('sel');
+  S.answers[qid]=ansIdx;
+}
+
+// ── COMPLETION ──
+function buildCompletion(){
+  // Score calc
+  const ambScores={lifestyle:55,regional:70,national:85,global:95};
+  const base=ambScores[S.ambition]||65;
+  const roleBonus=S.role==='founder'?8:S.role==='cofounder'?6:4;
+  const ansBonus=Math.min(Object.keys(S.answers).length*2,20);
+  const visionWords=document.getElementById('visionStatement')?document.getElementById('visionStatement').value.trim().split(/\s+/).filter(Boolean).length:0;
+  const visionBonus=visionWords>30?12:visionWords>10?7:0;
+  const score=Math.min(base+roleBonus+ansBonus+visionBonus,99);
+  const readiness=score>=80?'Strong':score>=60?'Established':'Developing';
+  const readinessBg=score>=80?'var(--black)':score>=60?'var(--g700)':'var(--g500)';
+
+  // Animate score
+  let n=0;
+  const el=document.getElementById('compScore');
+  const t=setInterval(()=>{n=Math.min(n+2,score);el.textContent=n;if(n>=score)clearInterval(t);},18);
+  document.getElementById('compReadiness').textContent=readiness;
+  document.getElementById('compReadiness').style.background=readinessBg;
+
+  // Messages by role
+  const msgs={
+    founder:['Your founder profile is active.','You are now visible to co-founders and core team members whose ambition aligns with yours. When ready, initiate structured alignment to identify your co-founder.'],
+    cofounder:['Your co-founder profile is active.','Founders with aligned ambition and strategy can now shortlist you. You will be notified when an alignment request is initiated.'],
+    team:['Your team member profile is active.','Founders seeking early operators with your profile can now discover you. Respond to alignment requests to unlock private introductions.'],
+    investor:['Your investor profile is active.','Founders on CoAttic can now see your investment focus and request introductions through the structured alignment process.'],
+  };
+  const [title,sub]=msgs[S.role]||msgs.founder;
+  document.getElementById('compTitle').textContent=title;
+  document.getElementById('compSub').textContent=sub;
+
+  // Buttons by role
+  const btns={
+    founder:`<a href="coattic-browse.html" class="comp-primary">Browse Members →</a><a href="coattic-find-cofounder.html" class="comp-secondary">Initiate Co-Founder Search</a>`,
+    cofounder:`<a href="coattic-browse.html" class="comp-primary">Browse Founders →</a><a href="coattic-dashboard.html" class="comp-secondary">View My Founder Dashboard</a>`,
+    team:`<a href="coattic-browse.html" class="comp-primary">Browse Opportunities →</a><a href="coattic-dashboard.html" class="comp-secondary">View My Dashboard</a>`,
+    investor:`<a href="coattic-browse.html" class="comp-primary">Browse Founders →</a><a href="coattic-dashboard.html" class="comp-secondary">View My Dashboard</a>`,
+  };
+  document.getElementById('compBtns').innerHTML=btns[S.role]||btns.founder;
+
+  // Save locally
+  localStorage.setItem('coattic_profile',JSON.stringify({...S,score,readiness}));
+
+  // Save to Supabase
+  saveProfileToSupabase({...S,score,readiness});
+}
+
+async function saveProfileToSupabase(profileData){
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    if(!session) return; // Not logged in, skip
+    const uid=session.user.id;
+    const name=localStorage.getItem('coattic_name')||session.user.user_metadata?.name||'';
+    const email=localStorage.getItem('coattic_email')||session.user.email||'';
+
+    const payload={
+      id:uid,
+      name,email,
+      role:profileData.role,
+      industry:profileData.industry||null,
+      stage:profileData.stage||null,
+      geography:profileData.geography||null,
+      website:profileData.website||null,
+      idea:profileData.idea||null,
+      ambition:profileData.ambition||null,
+      ambition_timeline:profileData.ambition_timeline||null,
+      expertise:profileData.expertise||null,
+      years_exp:profileData.years_exp||null,
+      startup_exp:profileData.startup_exp||null,
+      current_status:profileData.current_status||null,
+      availability:profileData.availability||null,
+      work_mode:profileData.work_mode||null,
+      headline:profileData.headline||null,
+      compensation:profileData.compensation||null,
+      stage_focus:profileData.stage_focus||null,
+      ticket_size:profileData.ticket_size||null,
+      sector_focus:profileData.sector_focus||null,
+      score:profileData.score,
+      readiness:profileData.readiness,
+      answers:profileData.answers||{},
+      approved:false,
+    };
+
+    const {error}=await sb.from('profiles').upsert(payload,{onConflict:'id'});
+    if(error) console.error('Profile save error:',error.message);
+  }catch(e){
+    console.error('Supabase save failed:',e);
+  }
+}
+
+function doSkip(){
+  if(confirm('Save progress and continue later? You can return to complete your profile from your dashboard.'))
+    window.location.href='coattic-dashboard.html';
+}
+
+// INIT
+renderStrategicQs();
+renderNatureQs();
+renderReadinessQs();
+
+// Pre-select role from localStorage if available
+if(S.role){
+  const roleCardMap={founder:'rc-founder',cofounder:'rc-cofounder',team:'rc-team',investor:'rc-investor'};
+  const cardId=roleCardMap[S.role];
+  if(cardId){
+    const card=document.getElementById(cardId).parentElement;
+    card.classList.add('sel');
+    document.getElementById(cardId).textContent='✓';
+    document.getElementById('nextRole').disabled=false;
+  }
+}
+</script>
+</body>
+</html>

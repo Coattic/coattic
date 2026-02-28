@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CoAttic — Let's Discuss</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#0A0A0A;--white:#fff;--g50:#FAFAFA;--g100:#F4F4F4;--g200:#E8E8E8;--g300:#D0D0D0;--g400:#A0A0A0;--g500:#6B6B6B;--g600:#444444;--g700:#2A2A2A;--g800:#1A1A1A;--gold:#8B6914;--gold-lt:#C9A84C;--gold-xlt:#F5EDD6;--ease:cubic-bezier(.4,0,.2,1)}
+body{background:var(--g50);font-family:'DM Sans',sans-serif;color:var(--black);-webkit-font-smoothing:antialiased;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+/* TOPBAR */
+.topbar{height:60px;padding:0 40px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--g200);flex-shrink:0;z-index:100}
+.t-logo{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:var(--black);text-decoration:none;display:flex;align-items:flex-start}
+.t-logo-dot{width:4px;height:4px;border-radius:50%;background:var(--gold);margin-top:3px;margin-left:1px}
+.t-nav{display:flex;align-items:center;gap:32px}
+.t-nav a{font-size:13px;font-weight:500;color:var(--g500);text-decoration:none;transition:color .2s}
+.t-nav a:hover,.t-nav a.active{color:var(--black)}
+.t-right{display:flex;align-items:center;gap:12px}
+.t-avatar{width:32px;height:32px;border-radius:3px;background:var(--black);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:600;color:var(--white)}
+/* CHAT LAYOUT */
+.chat-layout{flex:1;display:grid;grid-template-columns:280px 1fr 280px;overflow:hidden;min-height:0}
+/* LEFT PANEL — ROOMS */
+.rooms-panel{background:var(--white);border-right:1px solid var(--g200);display:flex;flex-direction:column;overflow:hidden}
+.rp-header{padding:20px;border-bottom:1px solid var(--g100)}
+.rp-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;color:var(--black);letter-spacing:-.2px;margin-bottom:3px}
+.rp-sub{font-size:11.5px;color:var(--g400)}
+.rp-list{flex:1;overflow-y:auto;padding:10px 0}
+.room-item{padding:14px 20px;cursor:pointer;transition:background .15s;border-left:2px solid transparent}
+.room-item:hover{background:var(--g50)}
+.room-item.active{background:var(--g100);border-left-color:var(--black)}
+.ri-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px}
+.ri-name{font-size:13px;font-weight:600;color:var(--black)}
+.ri-time{font-family:'DM Mono',monospace;font-size:9.5px;color:var(--g400)}
+.ri-role{font-size:11.5px;color:var(--g500);margin-bottom:4px}
+.ri-preview{font-size:12px;color:var(--g400);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ri-badge{display:inline-flex;font-family:'DM Mono',monospace;font-size:8.5px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--gold);background:var(--gold-xlt);border:1px solid rgba(139,105,20,.15);padding:1px 6px;border-radius:2px;margin-top:4px}
+.rp-empty{padding:28px 20px;text-align:center}
+.rp-empty-text{font-size:13px;color:var(--g400);line-height:1.65;margin-top:8px}
+.rp-empty-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;color:var(--g400);letter-spacing:-.2px}
+/* CHAT AREA */
+.chat-area{display:flex;flex-direction:column;overflow:hidden;background:var(--g50)}
+/* CHAT HEADER */
+.chat-header{background:var(--white);border-bottom:1px solid var(--g200);padding:16px 24px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.ch-profile{display:flex;align-items:center;gap:12px}
+.ch-av{width:38px;height:38px;border-radius:3px;background:var(--black);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:600;color:var(--white)}
+.ch-name{font-size:14px;font-weight:600;color:var(--black);margin-bottom:1px}
+.ch-role{font-size:11.5px;color:var(--g500)}
+.ch-score{display:flex;align-items:center;gap:12px}
+.ch-score-val{text-align:right}
+.ch-score-num{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--black);letter-spacing:-.5px;line-height:1}
+.ch-score-label{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--g400)}
+.ch-score-badge{display:inline-flex;align-items:center;font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--gold);background:var(--gold-xlt);border:1px solid rgba(139,105,20,.15);padding:2px 8px;border-radius:2px}
+.ch-actions{display:flex;gap:8px}
+.ch-btn{padding:7px 14px;border-radius:2px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:.1px}
+.ch-btn-s{background:var(--white);color:var(--g500);border:1px solid var(--g200)}
+.ch-btn-s:hover{border-color:var(--black);color:var(--black)}
+/* NOTICE BAR */
+.notice-bar{background:var(--white);border-bottom:1px solid var(--g100);padding:10px 24px;display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--g500);flex-shrink:0}
+.nb-rule{width:2px;height:20px;background:var(--gold);border-radius:2px;flex-shrink:0}
+/* MESSAGES */
+.messages{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:14px}
+.msg{display:flex;gap:10px;max-width:72%;animation:msgIn .25s var(--ease)}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg.mine{flex-direction:row-reverse;align-self:flex-end}
+.msg-av{width:32px;height:32px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:600;flex-shrink:0}
+.msg.mine .msg-av{background:var(--black);color:var(--white)}
+.msg.theirs .msg-av{background:var(--g200);color:var(--g600)}
+.msg-body{}
+.msg-bubble{padding:12px 15px;border-radius:4px;font-size:13.5px;line-height:1.6;max-width:100%}
+.msg.mine .msg-bubble{background:var(--black);color:var(--white);border-radius:4px 4px 2px 4px}
+.msg.theirs .msg-bubble{background:var(--white);color:var(--black);border:1px solid var(--g200);border-radius:4px 4px 4px 2px}
+.msg-meta{display:flex;align-items:center;gap:6px;margin-top:5px}
+.msg.mine .msg-meta{justify-content:flex-end}
+.msg-sender{font-size:11.5px;font-weight:600;color:var(--g500)}
+.msg-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--g300)}
+/* DATE DIVIDER */
+.date-div{text-align:center;font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--g300);padding:8px 0;display:flex;align-items:center;gap:12px}
+.date-div::before,.date-div::after{content:'';flex:1;height:1px;background:var(--g200)}
+/* INPUT */
+.chat-input-wrap{background:var(--white);border-top:1px solid var(--g200);padding:16px 24px;flex-shrink:0}
+.chat-input-row{display:flex;align-items:flex-end;gap:10px;background:var(--g50);border:1.5px solid var(--g200);border-radius:4px;padding:12px 14px;transition:border-color .2s}
+.chat-input-row:focus-within{border-color:var(--black)}
+.chat-input{flex:1;background:none;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--black);resize:none;line-height:1.6;max-height:120px;overflow-y:auto}
+.chat-input::placeholder{color:var(--g300)}
+.chat-send{width:34px;height:34px;border-radius:2px;background:var(--black);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s;color:var(--white);font-size:14px}
+.chat-send:hover{background:var(--g800)}
+.chat-send:disabled{opacity:.3;cursor:not-allowed}
+.input-hint{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--g300);margin-top:8px}
+/* RIGHT PANEL — PROFILE */
+.profile-panel{background:var(--white);border-left:1px solid var(--g200);overflow-y:auto;padding:24px}
+.pp-header{margin-bottom:20px}
+.pp-av{width:48px;height:48px;border-radius:3px;background:var(--black);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--white);margin-bottom:12px}
+.pp-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:var(--black);letter-spacing:-.3px;margin-bottom:3px}
+.pp-role{font-size:12.5px;color:var(--g500);margin-bottom:8px}
+.pp-badge{display:inline-flex;font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--gold);background:var(--gold-xlt);border:1px solid rgba(139,105,20,.15);padding:2px 8px;border-radius:2px}
+.pp-divider{height:1px;background:var(--g100);margin:16px 0}
+.pp-section-label{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--g400);margin-bottom:10px}
+.pp-score-big{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:300;color:var(--black);letter-spacing:-1.5px;line-height:1;margin-bottom:4px}
+.pp-score-label{font-size:12px;color:var(--g400);margin-bottom:14px}
+.pp-dim-bars{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.pp-dim-row{display:flex;align-items:center;gap:9px}
+.pp-dim-lbl{font-size:11.5px;color:var(--g500);width:80px;flex-shrink:0}
+.pp-dim-track{flex:1;height:2px;background:var(--g100);border-radius:2px;overflow:hidden}
+.pp-dim-fill{height:100%;background:var(--black);border-radius:2px;transition:width 1s var(--ease)}
+.pp-dim-pct{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;color:var(--g400);width:32px;text-align:right;flex-shrink:0}
+.pp-vision{background:var(--g50);border:1px solid var(--g100);border-left:2px solid var(--gold);border-radius:3px;padding:12px 14px;font-size:13px;color:var(--g600);font-style:italic;line-height:1.6;margin-bottom:14px}
+.pp-fields{display:flex;flex-direction:column;gap:8px}
+.pp-field{display:flex;justify-content:space-between;align-items:baseline}
+.pp-field-lbl{font-size:11.5px;color:var(--g400);font-weight:500}
+.pp-field-val{font-size:12px;color:var(--g700);font-weight:600;text-align:right;max-width:130px}
+.pp-contact-section{margin-top:16px}
+.pp-share-contact{width:100%;padding:10px;border-radius:3px;background:var(--black);color:var(--white);border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background .2s;letter-spacing:.2px}
+.pp-share-contact:hover{background:var(--g800)}
+.pp-contact-note{font-size:11.5px;color:var(--g400);text-align:center;margin-top:8px;line-height:1.55}
+@media(max-width:1100px){.chat-layout{grid-template-columns:1fr}.rooms-panel,.profile-panel{display:none}}
+@media(max-width:600px){.topbar{padding:0 16px}.t-nav{display:none}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="coattic-landing.html" class="t-logo">CoAttic<span class="t-logo-dot"></span></a>
+  <nav class="t-nav">
+    <a href="coattic-dashboard.html">Founder Dashboard</a>
+    <a href="coattic-browse.html">Browse Members</a>
+    <a href="coattic-find-cofounder.html">Find Co-Founder</a>
+    <a href="coattic-discuss.html" class="active">Let's Discuss</a>
+  </nav>
+  <div class="t-right"><div class="t-avatar" id="tAvatar">AK</div></div>
+</div>
+
+<div class="chat-layout">
+  <!-- ROOMS LIST -->
+  <div class="rooms-panel">
+    <div class="rp-header">
+      <div class="rp-title">Let's Discuss</div>
+      <div class="rp-sub">Private rooms — mutual alignment confirmed</div>
+    </div>
+    <div class="rp-list">
+      <div class="room-item active" onclick="switchRoom(this,'Priya Sharma','PS')">
+        <div class="ri-header">
+          <div class="ri-name">Priya Sharma</div>
+          <div class="ri-time">2h ago</div>
+        </div>
+        <div class="ri-role">Co-Founder &nbsp;·&nbsp; Technical</div>
+        <div class="ri-preview">That's a strong insight on the API...</div>
+        <div class="ri-badge">Strong Alignment</div>
+      </div>
+      <div class="room-item" onclick="switchRoom(this,'Rohan Verma','RV')">
+        <div class="ri-header">
+          <div class="ri-name">Rohan Verma</div>
+          <div class="ri-time">Yesterday</div>
+        </div>
+        <div class="ri-role">Co-Founder &nbsp;·&nbsp; Product</div>
+        <div class="ri-preview">I've been thinking about the GTM...</div>
+        <div class="ri-badge" style="color:var(--g600);background:var(--g100);border-color:var(--g200)">Moderate Alignment</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT AREA -->
+  <div class="chat-area">
+    <div class="chat-header">
+      <div class="ch-profile">
+        <div class="ch-av" id="chatAv">PS</div>
+        <div>
+          <div class="ch-name" id="chatName">Priya Sharma</div>
+          <div class="ch-role" id="chatRole">Co-Founder &nbsp;·&nbsp; Engineering / Technical &nbsp;·&nbsp; Mumbai</div>
+        </div>
+      </div>
+      <div class="ch-score">
+        <div class="ch-score-val">
+          <div class="ch-score-num">83</div>
+          <div class="ch-score-label">Alignment Score</div>
+        </div>
+        <div class="ch-score-badge">Strong</div>
+        <div class="ch-actions">
+          <button class="ch-btn ch-btn-s" onclick="window.location.href='coattic-alignment.html'">View Full Result</button>
+        </div>
+      </div>
+    </div>
+    <div class="notice-bar">
+      <div class="nb-rule"></div>
+      CoAttic steps back from here. This conversation is entirely private. Proceed at your own pace.
+    </div>
+    <div class="messages" id="msgContainer">
+      <div class="date-div">Today</div>
+
+      <div class="msg theirs">
+        <div class="msg-av">PS</div>
+        <div class="msg-body">
+          <div class="msg-bubble">Hi Arjun — really glad the alignment came back strong. I've been looking at your venture profile and I have a few thoughts on the technical architecture at MVP stage.</div>
+          <div class="msg-meta"><div class="msg-sender">Priya Sharma</div><div class="msg-time">10:12 AM</div></div>
+        </div>
+      </div>
+
+      <div class="msg mine">
+        <div class="msg-av" id="myAv">AK</div>
+        <div class="msg-body">
+          <div class="msg-bubble">Great, I was hoping you'd bring that up. The current stack is fairly lean — Node + PostgreSQL — but I've been thinking about whether we need a proper service layer before we hit any kind of scale.</div>
+          <div class="msg-meta"><div class="msg-time">10:18 AM</div></div>
+        </div>
+      </div>
+
+      <div class="msg theirs">
+        <div class="msg-av">PS</div>
+        <div class="msg-body">
+          <div class="msg-bubble">That's the right question to be asking at this stage. Honestly for 100 institutes you probably don't need it yet. But the moment you're designing the payments layer, you want that abstraction. I've done this exact transition twice.</div>
+          <div class="msg-meta"><div class="msg-sender">Priya Sharma</div><div class="msg-time">10:24 AM</div></div>
+        </div>
+      </div>
+
+      <div class="msg mine">
+        <div class="msg-av" id="myAv2">AK</div>
+        <div class="msg-body">
+          <div class="msg-bubble">That's a strong insight on the API boundary question. I'd want to understand what you think about the equity structure before we go deeper — the alignment questions covered it broadly but I have a more specific framework in mind.</div>
+          <div class="msg-meta"><div class="msg-time">10:31 AM</div></div>
+        </div>
+      </div>
+
+      <div class="msg theirs">
+        <div class="msg-av">PS</div>
+        <div class="msg-body">
+          <div class="msg-bubble">Yes — I prefer role-based with a 4-year vest and 1-year cliff. I'm not interested in equal splits because I think it creates ambiguity on decision authority. Happy to talk about percentages when we've validated the fit a bit more. Does that framework make sense to you?</div>
+          <div class="msg-meta"><div class="msg-sender">Priya Sharma</div><div class="msg-time">10:38 AM</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INPUT -->
+    <div class="chat-input-wrap">
+      <div class="chat-input-row">
+        <textarea class="chat-input" id="chatInput" placeholder="Write your message..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="chat-send" id="sendBtn" onclick="sendMessage()">↑</button>
+      </div>
+      <div class="input-hint">Enter to send &nbsp;·&nbsp; Shift+Enter for new line</div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL — PROFILE -->
+  <div class="profile-panel">
+    <div class="pp-header">
+      <div class="pp-av">PS</div>
+      <div class="pp-name">Priya Sharma</div>
+      <div class="pp-role">Co-Founder &nbsp;·&nbsp; Engineering / Technical &nbsp;·&nbsp; Mumbai</div>
+      <div class="pp-badge">Strong</div>
+    </div>
+    <div class="pp-divider"></div>
+    <div class="pp-section-label">Alignment Score</div>
+    <div class="pp-score-big">83</div>
+    <div class="pp-score-label">Final composite score</div>
+    <div class="pp-dim-bars">
+      <div class="pp-dim-row"><div class="pp-dim-lbl">Vision</div><div class="pp-dim-track"><div class="pp-dim-fill" style="width:92%"></div></div><div class="pp-dim-pct">92%</div></div>
+      <div class="pp-dim-row"><div class="pp-dim-lbl">Risk</div><div class="pp-dim-track"><div class="pp-dim-fill" style="width:88%"></div></div><div class="pp-dim-pct">88%</div></div>
+      <div class="pp-dim-row"><div class="pp-dim-lbl">Commitment</div><div class="pp-dim-track"><div class="pp-dim-fill" style="width:95%"></div></div><div class="pp-dim-pct">95%</div></div>
+      <div class="pp-dim-row"><div class="pp-dim-lbl">Leadership</div><div class="pp-dim-track"><div class="pp-dim-fill" style="width:42%"></div></div><div class="pp-dim-pct">42%</div></div>
+      <div class="pp-dim-row"><div class="pp-dim-lbl">Work Style</div><div class="pp-dim-track"><div class="pp-dim-fill" style="width:88%"></div></div><div class="pp-dim-pct">88%</div></div>
+    </div>
+    <div class="pp-divider"></div>
+    <div class="pp-section-label">Vision</div>
+    <div class="pp-vision">"I want to build the technical backbone for India's EdTech ecosystem — a platform that 1,000 founders build on top of."</div>
+    <div class="pp-divider"></div>
+    <div class="pp-section-label">Background</div>
+    <div class="pp-fields">
+      <div class="pp-field"><div class="pp-field-lbl">Expertise</div><div class="pp-field-val">Engineering / Technical</div></div>
+      <div class="pp-field"><div class="pp-field-lbl">Experience</div><div class="pp-field-val">5–10 Years</div></div>
+      <div class="pp-field"><div class="pp-field-lbl">Availability</div><div class="pp-field-val">Full-time now</div></div>
+      <div class="pp-field"><div class="pp-field-lbl">Runway</div><div class="pp-field-val">12+ months</div></div>
+      <div class="pp-field"><div class="pp-field-lbl">Equity</div><div class="pp-field-val">Role-based vesting</div></div>
+    </div>
+    <div class="pp-divider"></div>
+    <div class="pp-contact-section">
+      <button class="pp-share-contact" onclick="shareContact()">Share Contact Details</button>
+      <div class="pp-contact-note">Only share when both of you are ready. Contact sharing is mutual and irreversible.</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL='https://holytxxscklzivoxzwmd.supabase.co';
+const SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvbHl0eHhzY2tseml2b3h6d21kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMjk3NDQsImV4cCI6MjA4NzYwNTc0NH0.5NUHjhHL5n8bIYeeUcGqEx8QOG1G0zJQfCHiyYPRltE';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+
+let currentUser=null;
+let currentRoomId=null;
+let myInitials='?';
+let realtimeChannel=null;
+
+async function initChat(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){window.location.href='coattic-auth.html';return;}
+  currentUser=session.user;
+
+  const name=currentUser.user_metadata?.name||localStorage.getItem('coattic_name')||'Member';
+  myInitials=name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()||'?';
+  document.getElementById('tAvatar').textContent=myInitials;
+  document.getElementById('myAv').textContent=myInitials;
+  if(document.getElementById('myAv2')) document.getElementById('myAv2').textContent=myInitials;
+
+  // Load rooms
+  await loadRooms();
+}
+
+async function loadRooms(){
+  const {data:rooms}=await sb.from('discuss_rooms')
+    .select('*, founder:founder_id(id,name,role), candidate:candidate_id(id,name,role)')
+    .or(`founder_id.eq.${currentUser.id},candidate_id.eq.${currentUser.id}`)
+    .order('created_at',{ascending:false});
+
+  if(!rooms||rooms.length===0){
+    // No real rooms yet — keep demo UI visible
+    return;
+  }
+
+  const list=document.querySelector('.rp-list');
+  list.innerHTML=rooms.map(room=>{
+    const other=room.founder_id===currentUser.id?room.candidate:room.founder;
+    if(!other) return '';
+    const otherInitials=(other.name||'').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+    return `<div class="room-item" onclick="openRoom('${room.id}','${other.name}','${otherInitials}',this)">
+      <div class="ri-header"><div class="ri-name">${other.name}</div><div class="ri-time"></div></div>
+      <div class="ri-role">${other.role||'Member'}</div>
+      <div class="ri-preview">Click to open discussion</div>
+    </div>`;
+  }).join('');
+
+  // Auto-open first room
+  if(rooms[0]){
+    const first=rooms[0];
+    const other=first.founder_id===currentUser.id?first.candidate:first.founder;
+    if(other) openRoom(first.id,other.name,(other.name||'').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase(),document.querySelector('.room-item'));
+  }
+}
+
+async function openRoom(roomId,personName,personInitials,item){
+  currentRoomId=roomId;
+  document.querySelectorAll('.room-item').forEach(r=>r.classList.remove('active'));
+  if(item) item.classList.add('active');
+  document.getElementById('chatAv').textContent=personInitials;
+  document.getElementById('chatName').textContent=personName;
+
+  // Clear existing messages
+  const container=document.getElementById('msgContainer');
+  container.innerHTML='';
+
+  // Unsubscribe old channel
+  if(realtimeChannel) sb.removeChannel(realtimeChannel);
+
+  // Load messages
+  const {data:msgs}=await sb.from('messages')
+    .select('*, sender:sender_id(id,name)')
+    .eq('room_id',roomId)
+    .order('created_at',{ascending:true});
+
+  if(msgs) msgs.forEach(m=>renderMessage(m));
+  container.scrollTop=container.scrollHeight;
+
+  // Subscribe to realtime
+  realtimeChannel=sb.channel('room-'+roomId)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:`room_id=eq.${roomId}`},
+      payload=>{renderMessage(payload.new);container.scrollTop=container.scrollHeight;}
+    ).subscribe();
+}
+
+function renderMessage(msg){
+  const container=document.getElementById('msgContainer');
+  const isMine=msg.sender_id===currentUser.id;
+  const senderName=msg.sender?.name||'Member';
+  const senderInitials=senderName.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+  const time=new Date(msg.created_at).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  const el=document.createElement('div');
+  el.className='msg '+(isMine?'mine':'theirs');
+  el.innerHTML=`
+    <div class="msg-av" style="background:${isMine?'var(--black)':'var(--g200)'};color:${isMine?'white':'var(--g600)'};width:32px;height:32px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:600;flex-shrink:0">${isMine?myInitials:senderInitials}</div>
+    <div class="msg-body">
+      <div class="msg-bubble" style="${isMine?'':'background:white;border:1px solid var(--g200);color:var(--black)'}">${(msg.content||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+      <div class="msg-meta">${!isMine?`<div class="msg-sender" style="font-size:11.5px;font-weight:600;color:var(--g500)">${senderName}</div>`:''}
+      <div class="msg-time" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--g300)">${time}</div></div>
+    </div>`;
+  container.appendChild(el);
+}
+
+function handleKey(e){
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}
+}
+
+function autoResize(el){
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight,120)+'px';
+}
+
+async function sendMessage(){
+  const input=document.getElementById('chatInput');
+  const text=input.value.trim();
+  if(!text) return;
+
+  if(currentRoomId){
+    // Real send
+    input.value='';input.style.height='auto';
+    const {error}=await sb.from('messages').insert({
+      room_id:currentRoomId,
+      sender_id:currentUser.id,
+      content:text
+    });
+    if(error) console.error('Send error:',error);
+  } else {
+    // Demo mode — render locally
+    const container=document.getElementById('msgContainer');
+    const el=document.createElement('div');
+    el.className='msg mine';
+    el.innerHTML=`
+      <div class="msg-av" style="background:var(--black);color:white;width:32px;height:32px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:600;flex-shrink:0">${myInitials}</div>
+      <div class="msg-body">
+        <div class="msg-bubble">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+        <div class="msg-meta"><div class="msg-time" style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.4)">${new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</div></div>
+      </div>`;
+    container.appendChild(el);
+    input.value='';input.style.height='auto';
+    container.scrollTop=container.scrollHeight;
+  }
+}
+
+function switchRoom(item,personName,personInitials){
+  document.querySelectorAll('.room-item').forEach(r=>r.classList.remove('active'));
+  item.classList.add('active');
+  document.getElementById('chatAv').textContent=personInitials;
+  document.getElementById('chatName').textContent=personName;
+}
+
+async function shareContact(){
+  if(currentRoomId){
+    await sb.from('discuss_rooms').update({contact_shared_founder:true}).eq('id',currentRoomId).eq('founder_id',currentUser.id);
+  }
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0A0A0A;color:white;padding:11px 20px;border-radius:3px;font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;z-index:700;letter-spacing:.2px;white-space:nowrap';
+  t.textContent='Contact sharing request sent. Awaiting confirmation.';
+  document.body.appendChild(t);setTimeout(()=>t.remove(),3500);
+}
+
+// Start
+initChat();
+document.getElementById('msgContainer').scrollTop=document.getElementById('msgContainer').scrollHeight;
+</script>
+</body>
+</html>
