@@ -252,19 +252,50 @@ body{background:var(--g50);font-family:'DM Sans',sans-serif;color:var(--black);-
   </div>
   <div class="two-col">
     <div class="field">
-      <label>Primary Geography</label>
-      <select id="ventureGeo">
-        <option value="">Select location</option>
-        <option>Bangalore</option>
-        <option>Mumbai</option>
-        <option>Delhi NCR</option>
-        <option>Pune</option>
-        <option>Hyderabad</option>
-        <option>Chennai</option>
-        <option>Kolkata</option>
-        <option>Other India City</option>
-        <option>Outside India</option>
+      <label>Country</label>
+      <select id="ventureCountry" onchange="updateGeo()">
+        <option value="">Select country</option>
+        <option>United States</option>
+        <option>United Kingdom</option>
+        <option>Canada</option>
+        <option>Australia</option>
+        <option>India</option>
+        <option>Singapore</option>
+        <option>UAE</option>
+        <option>Germany</option>
+        <option>France</option>
+        <option>Netherlands</option>
+        <option>Sweden</option>
+        <option>Israel</option>
+        <option>Japan</option>
+        <option>South Korea</option>
+        <option>Brazil</option>
+        <option>Mexico</option>
+        <option>Nigeria</option>
+        <option>Kenya</option>
+        <option>South Africa</option>
+        <option>Indonesia</option>
+        <option>Philippines</option>
+        <option>Vietnam</option>
+        <option>Pakistan</option>
+        <option>Bangladesh</option>
+        <option>Sri Lanka</option>
+        <option>New Zealand</option>
+        <option>Ireland</option>
+        <option>Spain</option>
+        <option>Italy</option>
+        <option>Portugal</option>
+        <option>Other</option>
       </select>
+    </div>
+    <div class="field">
+      <label>City</label>
+      <input type="text" id="ventureCity" placeholder="Your city" oninput="updateGeo()"/>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="field" style="display:none" id="geoHidden">
+      <input type="hidden" id="ventureGeo"/>
     </div>
     <div class="field">
       <label>Website (optional)</label>
@@ -515,6 +546,13 @@ body{background:var(--g50);font-family:'DM Sans',sans-serif;color:var(--black);-
 
 <script>
 // ── DATA ──
+function updateGeo(){
+  const country=document.getElementById('ventureCountry')?.value||'';
+  const city=document.getElementById('ventureCity')?.value||'';
+  const geo=document.getElementById('ventureGeo');
+  if(geo) geo.value=[city,country].filter(Boolean).join(', ');
+}
+
 // Supabase loaded via CDN in head
 const SUPABASE_URL='https://holytxxscklzivoxzwmd.supabase.co';
 const SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvbHl0eHhzY2tseml2b3h6d21kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMjk3NDQsImV4cCI6MjA4NzYwNTc0NH0.5NUHjhHL5n8bIYeeUcGqEx8QOG1G0zJQfCHiyYPRltE';
