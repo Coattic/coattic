@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 136" width="520" height="136">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&display=swap');
+    </style>
+  </defs>
+
+  <!-- Scale up favicon by 4x
+    Favicon: viewBox 0 0 130 34, font 21px
+    Scale factor: 4
+    Co at x=4*4=16, y=25*4=100... 
+    Actually just multiply all coords by 4
+    Co: x=16 y=100
+    Triangle: 42*4=168, 3*4=12  53*4=212, 25*4=100  31*4=124, 25*4=100
+    ttic: x=55*4=220 y=100
+    dot: cx=80*4=320 cy=4*4=16 r=2.5*4=10... too big, keep r=5
+  -->
+
+  <!-- "Co" -->
+  <text x="16" y="100"
+    font-family="Cormorant Garamond, Georgia, serif"
+    font-size="84" font-weight="600"
+    fill="#0A0A0A">Co</text>
+
+  <!-- Gold outline triangle replacing A — favicon coords x4 -->
+  <polygon points="168,12 212,100 124,100"
+    fill="none"
+    stroke="#C9A84C"
+    stroke-width="8"
+    stroke-linejoin="round"/>
+
+  <!-- "ttic" -->
+  <text x="220" y="100"
+    font-family="Cormorant Garamond, Georgia, serif"
+    font-size="84" font-weight="600"
+    fill="#0A0A0A">ttic</text>
+
+  <!-- Dot above last C — favicon dot was cx=80*4=320, cy=4*4=16 -->
+  <circle cx="332" cy="26" r="5" fill="#C9A84C"/>
+
+</svg>

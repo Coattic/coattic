@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 34" width="130" height="34">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&display=swap');
+    </style>
+  </defs>
+
+  <!-- Black background -->
+  <rect width="130" height="34" fill="#0A0A0A" rx="3"/>
+
+  <!-- "Co" -->
+  <text x="4" y="25"
+    font-family="Cormorant Garamond, Georgia, serif"
+    font-size="21" font-weight="600"
+    fill="#FFFFFF">Co</text>
+
+  <!-- Gold outline triangle replacing A — scaled for 21px -->
+  <polygon points="42,3 53,25 31,25"
+    fill="none"
+    stroke="#C9A84C"
+    stroke-width="2"
+    stroke-linejoin="round"/>
+
+  <!-- "ttic" -->
+  <text x="55" y="25"
+    font-family="Cormorant Garamond, Georgia, serif"
+    font-size="21" font-weight="600"
+    fill="#FFFFFF">ttic</text>
+
+  <!-- Dot above last C in ttic
+    ttic at x=55: t~55-62 t~62-69 i~69-74 c~74-85 center~80
+  -->
+  <circle cx="80" cy="4" r="2.5" fill="#C9A84C"/>
+
+</svg>
