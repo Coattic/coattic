@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CoAttic — Reset Password</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#0A0A0A;--white:#FFFFFF;--g50:#FAFAFA;--g100:#F4F4F4;--g200:#E8E8E8;--g300:#D0D0D0;--g400:#A0A0A0;--g500:#6B6B6B;--g600:#444444;--g700:#2A2A2A;--g800:#1A1A1A;--gold:#8B6914;--gold-lt:#C9A84C;--gold-xlt:#F5EDD6;--danger:#C0392B;--ease:cubic-bezier(.4,0,.2,1)}
+body{background:var(--white);font-family:'DM Sans',sans-serif;color:var(--black);-webkit-font-smoothing:antialiased;min-height:100vh;display:grid;grid-template-columns:1fr 1fr}
+.left{background:var(--black);padding:56px;display:flex;flex-direction:column;min-height:100vh;position:relative;overflow:hidden}
+.left::before{content:'';position:absolute;inset:0;background-image:linear-gradient(var(--g800) 1px,transparent 1px),linear-gradient(90deg,var(--g800) 1px,transparent 1px);background-size:60px 60px;opacity:.4}
+.left-logo{position:relative;z-index:1}
+.left-content{position:relative;z-index:1;margin:auto 0}
+.left-eyebrow{font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold-lt);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.left-eyebrow::after{content:'';flex:0 0 20px;height:1px;background:var(--gold-lt);opacity:.4}
+.left-title{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,4vw,52px);font-weight:300;color:var(--white);letter-spacing:-1px;line-height:1.15;margin-bottom:16px}
+.left-title strong{font-weight:600}
+.left-title em{font-style:italic}
+.left-sub{font-size:14.5px;color:var(--g500);line-height:1.8;max-width:380px}
+.right{display:flex;align-items:center;justify-content:center;padding:56px;min-height:100vh}
+.form-wrap{width:100%;max-width:380px}
+.back-link{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--g400);text-decoration:none;margin-bottom:32px;transition:color .2s}
+.back-link:hover{color:var(--black)}
+.panel-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:500;color:var(--black);margin-bottom:4px;letter-spacing:-.3px}
+.panel-sub{font-size:13.5px;color:var(--g500);margin-bottom:24px;line-height:1.6}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--g400);margin-bottom:6px}
+.field input{width:100%;background:var(--g50);border:1px solid var(--g200);border-radius:3px;padding:12px 13px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--black);outline:none;transition:border-color .2s,box-shadow .2s}
+.field input:focus{border-color:var(--black);box-shadow:0 0 0 3px rgba(10,10,10,.06);background:var(--white)}
+.field input::placeholder{color:var(--g300)}
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:44px}
+.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:14px;color:var(--g400);padding:4px;transition:color .2s}
+.pw-toggle:hover{color:var(--black)}
+.pw-strength-bar{display:flex;gap:3px;margin-top:8px}
+.pw-seg{height:2px;flex:1;border-radius:2px;background:var(--g200);transition:background .3s}
+.pw-seg.weak{background:var(--danger)}
+.pw-seg.fair{background:var(--gold)}
+.pw-seg.strong{background:#27AE60}
+.pw-strength-lbl{font-size:11px;color:var(--g400);margin-top:5px}
+.alert-box{padding:11px 14px;border-radius:3px;font-size:13px;margin-bottom:14px;display:none;line-height:1.55}
+.alert-box.show{display:block}
+.alert-error{background:rgba(192,57,43,.07);border:1px solid rgba(192,57,43,.2);color:var(--danger)}
+.alert-success{background:rgba(39,174,96,.07);border:1px solid rgba(39,174,96,.2);color:#1A5C38}
+.submit-btn{width:100%;padding:13px;border-radius:3px;border:none;background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:.3px;box-shadow:0 2px 12px rgba(0,0,0,.12);transition:background .2s,transform .15s}
+.submit-btn:hover{background:var(--g800);transform:translateY(-1px)}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.success-panel{display:none;text-align:center;padding:16px 0}
+.success-icon{width:56px;height:56px;border-radius:3px;background:var(--black);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:24px;color:white}
+.success-panel h3{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:500;color:var(--black);margin-bottom:8px;letter-spacing:-.3px}
+.success-panel p{font-size:13.5px;color:var(--g500);line-height:1.75;margin-bottom:24px}
+.goto-btn{display:block;width:100%;padding:14px;border-radius:3px;background:var(--black);color:var(--white);text-decoration:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;text-align:center;letter-spacing:.3px;transition:background .2s,transform .15s}
+.goto-btn:hover{background:var(--g800);transform:translateY(-1px)}
+.invalid-panel{display:none;text-align:center;padding:16px 0}
+.invalid-icon{width:56px;height:56px;border-radius:3px;background:var(--g200);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:24px;color:var(--g500)}
+.invalid-panel h3{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;color:var(--black);margin-bottom:8px;letter-spacing:-.3px}
+.invalid-panel p{font-size:13.5px;color:var(--g500);line-height:1.75;margin-bottom:24px}
+@media(max-width:768px){body{grid-template-columns:1fr}.left{display:none}.right{padding:40px 24px;align-items:flex-start;padding-top:56px}.form-wrap{max-width:100%}}
+</style>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%230A0A0A' rx='4'/><polygon points='16,6 26,26 6,26' fill='none' stroke='%23C9A84C' stroke-width='2.5' stroke-linejoin='round'/></svg>">
+</head>
+<body>
+
+<div class="left">
+  <a href="coattic-landing.html" class="left-logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 136" height="30" style="display:block">
+      <text x="16" y="100" font-family="Georgia,serif" font-size="84" font-weight="600" fill="#FFFFFF">Co</text>
+      <polygon points="168,12 212,100 124,100" fill="none" stroke="#C9A84C" stroke-width="8" stroke-linejoin="round"/>
+      <text x="220" y="100" font-family="Georgia,serif" font-size="84" font-weight="600" fill="#FFFFFF">ttic</text>
+      <circle cx="332" cy="26" r="5" fill="#C9A84C"/>
+    </svg>
+  </a>
+  <div class="left-content">
+    <div class="left-eyebrow">Password Reset</div>
+    <h2 class="left-title">Set a new<br><em>password.</em></h2>
+    <p class="left-sub">Choose a strong password. You will be signed in automatically once it's updated.</p>
+  </div>
+</div>
+
+<div class="right">
+  <div class="form-wrap">
+    <a href="coattic-auth.html" class="back-link">← Back to sign in</a>
+
+    <!-- INVALID / EXPIRED LINK -->
+    <div class="invalid-panel" id="invalidPanel">
+      <div class="invalid-icon">!</div>
+      <h3>Link expired or invalid.</h3>
+      <p>This password reset link has expired or already been used. Request a new one from the sign in page.</p>
+      <a href="coattic-auth.html" class="goto-btn">Back to Sign In →</a>
+    </div>
+
+    <!-- RESET FORM -->
+    <div id="resetForm">
+      <div class="panel-title">Set New Password</div>
+      <div class="panel-sub">Enter a new password for your CoAttic account.</div>
+      <div class="alert-box alert-error" id="resetError"></div>
+      <div class="field">
+        <label>New Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="newPw" placeholder="Create a new password" oninput="checkStrength(this)"/>
+          <button class="pw-toggle" type="button" onclick="togglePw('newPw',this)">Show</button>
+        </div>
+        <div class="pw-strength-bar">
+          <div class="pw-seg" id="s0"></div>
+          <div class="pw-seg" id="s1"></div>
+          <div class="pw-seg" id="s2"></div>
+          <div class="pw-seg" id="s3"></div>
+        </div>
+        <div class="pw-strength-lbl" id="pwLbl">Enter a password</div>
+      </div>
+      <div class="field">
+        <label>Confirm Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="confirmPw" placeholder="Confirm your new password"/>
+          <button class="pw-toggle" type="button" onclick="togglePw('confirmPw',this)">Show</button>
+        </div>
+      </div>
+      <button class="submit-btn" id="resetBtn" onclick="handleReset()">Update Password →</button>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success-panel" id="successPanel">
+      <div class="success-icon">✓</div>
+      <h3>Password updated.</h3>
+      <p>Your password has been changed successfully. You are now signed in.</p>
+      <a href="coattic-dashboard.html" class="goto-btn">Go to Dashboard →</a>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://holytxxscklzivoxzwmd.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvbHl0eHhzY2tseml2b3h6d21kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMjk3NDQsImV4cCI6MjA4NzYwNTc0NH0.5NUHjhHL5n8bIYeeUcGqEx8QOG1G0zJQfCHiyYPRltE';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// Supabase puts the token in the URL hash as #access_token=...&type=recovery
+// We need to let the client pick it up automatically via onAuthStateChange
+let sessionReady = false;
+
+sb.auth.onAuthStateChange(async (event, session) => {
+  if (event === 'PASSWORD_RECOVERY') {
+    // Token is valid — show the reset form
+    sessionReady = true;
+    document.getElementById('resetForm').style.display = 'block';
+    document.getElementById('invalidPanel').style.display = 'none';
+  }
+});
+
+// On load — check if there's a valid recovery session
+(async () => {
+  // Give onAuthStateChange a moment to fire
+  await new Promise(r => setTimeout(r, 800));
+  if (!sessionReady) {
+    // Check if already logged in (e.g. link already used)
+    const { data: { session } } = await sb.auth.getSession();
+    if (session && session.user) {
+      // Already signed in — could be a used link or direct visit
+      // Show form anyway so they can change password if they want
+      sessionReady = true;
+      document.getElementById('resetForm').style.display = 'block';
+      document.getElementById('invalidPanel').style.display = 'none';
+    } else {
+      // No session, no recovery event — link is invalid or expired
+      document.getElementById('resetForm').style.display = 'none';
+      document.getElementById('invalidPanel').style.display = 'block';
+    }
+  }
+})();
+
+async function handleReset() {
+  const pw = document.getElementById('newPw').value;
+  const confirm = document.getElementById('confirmPw').value;
+  const errBox = document.getElementById('resetError');
+  errBox.classList.remove('show');
+
+  if (pw.length < 8) {
+    errBox.textContent = 'Password must be at least 8 characters.';
+    errBox.classList.add('show');
+    return;
+  }
+  if (pw !== confirm) {
+    errBox.textContent = 'Passwords do not match.';
+    errBox.classList.add('show');
+    return;
+  }
+
+  const btn = document.getElementById('resetBtn');
+  btn.disabled = true;
+  btn.textContent = 'Updating...';
+
+  try {
+    const { error } = await sb.auth.updateUser({ password: pw });
+    if (error) throw error;
+    document.getElementById('resetForm').style.display = 'none';
+    document.getElementById('successPanel').style.display = 'block';
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Update Password →';
+    errBox.textContent = err.message || 'Something went wrong. Please try again.';
+    errBox.classList.add('show');
+  }
+}
+
+function togglePw(id, btn) {
+  const el = document.getElementById(id);
+  el.type = el.type === 'text' ? 'password' : 'text';
+  btn.textContent = el.type === 'text' ? 'Hide' : 'Show';
+}
+
+function checkStrength(input) {
+  const pw = input.value; let s = 0;
+  if (pw.length >= 8) s++;
+  if (/[A-Z]/.test(pw)) s++;
+  if (/[0-9]/.test(pw)) s++;
+  if (/[^A-Za-z0-9]/.test(pw)) s++;
+  const cls = s <= 1 ? 'weak' : s <= 2 ? 'fair' : 'strong';
+  const lbls = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+  ['s0','s1','s2','s3'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.className = 'pw-seg';
+    if (i < s) el.classList.add(cls);
+  });
+  document.getElementById('pwLbl').textContent = lbls[s] || 'Enter a password';
+}
+</script>
+</body>
+</html>
