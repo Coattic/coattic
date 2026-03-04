@@ -231,10 +231,9 @@ body{background:var(--g50);font-family:'DM Sans',sans-serif;color:var(--black);-
       </div>
       <div class="act-panel">
         <div class="act-hd"><div class="act-title">Recent Activity</div></div>
-        <div class="act-item"><div class="act-dot g"></div><div class="act-text"><strong>Priya Sharma</strong> shortlisted. Alignment request pending.</div><div class="act-time">2h ago</div></div>
-        <div class="act-item"><div class="act-dot"></div><div class="act-text">Profile viewed by <strong>3 members</strong> matching your ambition scale.</div><div class="act-time">Yesterday</div></div>
-        <div class="act-item"><div class="act-dot g"></div><div class="act-text"><strong>Rohan Verma</strong> accepted alignment request. Awaiting responses.</div><div class="act-time">2 days ago</div></div>
-        <div class="act-item"><div class="act-dot gr"></div><div class="act-text">Readiness Score updated to <strong>78 — Established</strong>.</div><div class="act-time">3 days ago</div></div>
+        <div id="activityFeed">
+          <div style="padding:16px;color:var(--g400);font-size:13px">Loading…</div>
+        </div>
       </div>
     </div>
   </main>
@@ -263,6 +262,15 @@ const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 const roleLabels={founder:'Founder',cofounder:'Co-Founder',team:'Core Team',investor:'Investor'};
 
 /* ── Sign Out ────────────────────────────────────────────── */
+function timeAgo(date){
+  const s=Math.floor((new Date()-date)/1000);
+  if(s<60) return 'Just now';
+  if(s<3600) return Math.floor(s/60)+'m ago';
+  if(s<86400) return Math.floor(s/3600)+'h ago';
+  if(s<604800) return Math.floor(s/86400)+'d ago';
+  return date.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+
 async function handleSignOut(){
   await sb.auth.signOut();
   localStorage.clear();
@@ -400,14 +408,14 @@ async function loadDashboard(){
   }
   if(profile.name) document.getElementById('vcVenture').textContent=profile.name.split(' ')[0]+"'s Venture";
 
-  // Load shortlist + alignment counts in parallel
+  // Load shortlist + try alignment counts in parallel
   const [slRes,alRes]=await Promise.all([
-    sb.from('shortlist').select('*, candidate:candidate_id(id,name,role,expertise,score,readiness,headline)').eq('founder_id',session.user.id).order('created_at',{ascending:false}),
-    sb.from('alignments').select('id',{count:'exact'}).eq('founder_id',session.user.id)
+    sb.from('shortlist').select('*, candidate:candidate_id(id,name,role,expertise,score,readiness,headline)', {count:'exact'}).eq('founder_id',session.user.id).order('created_at',{ascending:false}),
+    sb.from('shortlist').select('id',{count:'exact'}).eq('founder_id',session.user.id) // fallback — use shortlist count as activity proxy
   ]);
 
   const shortlist=slRes.data||[];
-  const alignmentCount=alRes.count||0;
+  const alignmentCount=0; // set to 0 until alignments table confirmed
 
   // Stats cards
   const slCount=shortlist.length;
@@ -420,8 +428,23 @@ async function loadDashboard(){
   // Score dimension bars
   renderScoreBars(profile, slCount);
 
-  // Completeness checklist
+  // Profile completeness
   renderCompleteness(profile, slCount, alignmentCount);
+
+  // Activity feed — built from shortlist entries
+  const feed=document.getElementById('activityFeed');
+  if(feed){
+    if(shortlist.length===0){
+      feed.innerHTML='<div style="padding:16px;color:var(--g400);font-size:13px">No activity yet. Browse members to get started.</div>';
+    } else {
+      feed.innerHTML=shortlist.slice(0,5).map(item=>{
+        const c=item.candidate;
+        const name=c?.name||'A member';
+        const ago=item.created_at?timeAgo(new Date(item.created_at)):'Recently';
+        return `<div class="act-item"><div class="act-dot g"></div><div class="act-text"><strong>${name}</strong> shortlisted.</div><div class="act-time">${ago}</div></div>`;
+      }).join('');
+    }
+  }
 
   // Shortlist panel
   if(slCount===0){
