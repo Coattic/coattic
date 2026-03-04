@@ -560,6 +560,42 @@ const SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 const S={role:localStorage.getItem('coattic_role')||null,ambition:null,answers:{},strategicAnswers:{},natureAnswers:{},readinessAnswers:{}};
 
+// Pre-load existing profile so editing doesn't wipe saved data
+(async()=>{
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    if(!session) return;
+    const {data:p}=await sb.from('profiles').select('*').eq('id',session.user.id).single();
+    if(!p) return;
+    // Merge existing values into S — only fill nulls so user choices take precedence
+    if(p.role&&!S.role){S.role=p.role;localStorage.setItem('coattic_role',p.role);}
+    if(p.ambition) S.ambition=p.ambition;
+    if(p.industry) S.industry=p.industry;
+    if(p.stage) S.stage=p.stage;
+    if(p.geography) S.geography=p.geography;
+    if(p.website) S.website=p.website;
+    if(p.idea) S.idea=p.idea;
+    if(p.ambition_timeline) S.ambition_timeline=p.ambition_timeline;
+    if(p.expertise) S.expertise=p.expertise;
+    if(p.years_exp) S.years_exp=p.years_exp;
+    if(p.startup_exp) S.startup_exp=p.startup_exp;
+    if(p.current_status) S.current_status=p.current_status;
+    if(p.availability) S.availability=p.availability;
+    if(p.work_mode) S.work_mode=p.work_mode;
+    if(p.headline) S.headline=p.headline;
+    if(p.compensation) S.compensation=p.compensation;
+    if(p.stage_focus) S.stage_focus=p.stage_focus;
+    if(p.ticket_size) S.ticket_size=p.ticket_size;
+    if(p.sector_focus) S.sector_focus=p.sector_focus;
+    if(p.answers&&Object.keys(p.answers).length) S.answers=p.answers;
+    if(p.name) localStorage.setItem('coattic_name',p.name);
+    if(p.email) localStorage.setItem('coattic_email',p.email);
+    // Also preserve approved status — pass it through on save
+    S._approved=p.approved||false;
+    S._existingScore=p.score||null;
+  }catch(e){}
+})();
+
 // Step flows per role
 const FLOWS={
   founder:  ['role','venture','ambition','strategic','nature','done'],
@@ -819,7 +855,7 @@ async function saveProfileToSupabase(profileData){
       score:profileData.score,
       readiness:profileData.readiness,
       answers:profileData.answers||{},
-      approved:false,
+      approved: S._approved !== undefined ? S._approved : false,
     };
 
     const {error}=await sb.from('profiles').upsert(payload,{onConflict:'id'});
