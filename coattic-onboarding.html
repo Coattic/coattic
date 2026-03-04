@@ -624,7 +624,36 @@ function showStep(id){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
+function collectStep(from){
+  const val=id=>{const el=document.getElementById(id);return el&&el.value&&el.value.trim()?el.value.trim():null;};
+  if(from==='venture'){
+    S.venture_name=val('ventureName')||S.venture_name||null;
+    S.industry=val('ventureIndustry')||S.industry||null;
+    S.stage=val('ventureStage')||S.stage||null;
+    // Geography: use the hidden ventureGeo field (populated by updateGeo)
+    S.geography=val('ventureGeo')||[val('ventureCity'),val('ventureCountry')].filter(Boolean).join(', ')||S.geography||null;
+    S.website=val('ventureWebsite')||S.website||null;
+    S.idea=val('visionStatement')||S.idea||null;
+  }
+  if(from==='background'){
+    S.expertise=val('bgExpertise')||S.expertise||null;
+    S.years_exp=val('bgYears')||S.years_exp||null;
+    S.startup_exp=val('bgStartup')||S.startup_exp||null;
+    S.current_status=val('bgStatus')||S.current_status||null;
+    S.availability=val('bgAvailability')||S.availability||null;
+    S.work_mode=val('bgWork')||S.work_mode||null;
+    S.headline=val('bgHeadline')||S.headline||null;
+  }
+  if(from==='investor'){
+    // invStage is set via selectSingleOpt into S.answers['invStage']
+    S.stage_focus=S.answers['invStage']||S.stage_focus||null;
+    S.ticket_size=val('invTicket')||S.ticket_size||null;
+    S.sector_focus=val('invSector')||S.sector_focus||null;
+  }
+}
+
 function goNext(from){
+  collectStep(from);
   const flow=getFlow();
   const idx=flow.indexOf(from);
   if(idx<flow.length-1) showStep(flow[idx+1]);
