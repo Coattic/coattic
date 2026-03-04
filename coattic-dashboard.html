@@ -156,7 +156,7 @@ body{background:var(--g50);font-family:'DM Sans',sans-serif;color:var(--black);-
     <div class="sb-label">Account</div>
     <a href="coattic-onboarding.html" class="sb-link">Edit Profile</a>
     <button class="sb-link" onclick="openModal()">Share Feedback</button>
-    <a href="coattic-landing.html" class="sb-link">Sign Out</a>
+    <button class="sb-link" onclick="handleSignOut()">Sign Out</button>
     <div class="sb-bottom">
       <div class="sbp">
         <div class="sbp-av" id="sbAv">AK</div>
@@ -178,20 +178,20 @@ body{background:var(--g50);font-family:'DM Sans',sans-serif;color:var(--black);-
     <div class="g3" style="margin-bottom:20px">
       <div class="rc">
         <div class="c-ey">Readiness Score</div>
-        <div class="rc-score" id="rcScore">78</div>
-        <div class="rc-badge" id="rcBadge">Established</div>
+        <div class="rc-score" id="rcScore">—</div>
+        <div class="rc-badge" id="rcBadge">Loading…</div>
         <div class="rc-bars">
-          <div class="rc-row"><div class="rc-lbl">Profile</div><div class="rc-track"><div class="rc-fill" style="width:85%"></div></div></div>
-          <div class="rc-row"><div class="rc-lbl">Vision</div><div class="rc-track"><div class="rc-fill" style="width:72%"></div></div></div>
-          <div class="rc-row"><div class="rc-lbl">Answers</div><div class="rc-track"><div class="rc-fill" style="width:65%"></div></div></div>
-          <div class="rc-row"><div class="rc-lbl">Activity</div><div class="rc-track"><div class="rc-fill" style="width:50%"></div></div></div>
+          <div class="rc-row"><div class="rc-lbl">Profile</div><div class="rc-track"><div class="rc-fill" id="barProfile" style="width:0%"></div></div></div>
+          <div class="rc-row"><div class="rc-lbl">Vision</div><div class="rc-track"><div class="rc-fill" id="barVision" style="width:0%"></div></div></div>
+          <div class="rc-row"><div class="rc-lbl">Answers</div><div class="rc-track"><div class="rc-fill" id="barAnswers" style="width:0%"></div></div></div>
+          <div class="rc-row"><div class="rc-lbl">Activity</div><div class="rc-track"><div class="rc-fill" id="barActivity" style="width:0%"></div></div></div>
         </div>
       </div>
       <div class="card vc" style="grid-column:span 2">
         <div class="c-ey">Vision Statement</div>
-        <div class="vc-text" id="vcText">"Building the operating infrastructure for India's 100,000 coaching institutes — a ₹500Cr revenue business within 7 years, defining the default platform for admissions, payments, and student lifecycle management."</div>
+        <div class="vc-text" id="vcText">Complete your profile to display your vision statement.</div>
         <div class="vc-meta">
-          <div><div class="vc-venture" id="vcVenture">EduOS</div><div class="vc-stage" id="vcStage">MVP &nbsp;·&nbsp; EdTech &nbsp;·&nbsp; Bangalore</div></div>
+          <div><div class="vc-venture" id="vcVenture"></div><div class="vc-stage" id="vcStage"></div></div>
           <button onclick="window.location.href='coattic-onboarding.html'" style="background:none;border:none;font-size:12px;font-weight:600;color:var(--g400);cursor:pointer;transition:color .2s" onmouseover="this.style.color='#0A0A0A'" onmouseout="this.style.color='#A0A0A0'">Edit</button>
         </div>
       </div>
@@ -199,9 +199,9 @@ body{background:var(--g50);font-family:'DM Sans',sans-serif;color:var(--black);-
 
     <!-- STATS -->
     <div class="g3">
-      <div class="card"><div class="c-ey">Active Shortlist</div><div class="c-val">3</div><div class="c-sub">of 5 slots &nbsp;·&nbsp; 2 available</div></div>
-      <div class="card"><div class="c-ey">Alignment Requests</div><div class="c-val">1</div><div class="c-sub">sent this week &nbsp;·&nbsp; 2 remaining</div></div>
-      <div class="card"><div class="c-ey">Profile Views</div><div class="c-val">14</div><div class="c-sub">past 7 days</div></div>
+      <div class="card"><div class="c-ey">Active Shortlist</div><div class="c-val" id="statShortlist">—</div><div class="c-sub" id="statShortlistSub">Loading…</div></div>
+      <div class="card"><div class="c-ey">Alignment Requests</div><div class="c-val" id="statAlignments">—</div><div class="c-sub">sent this week</div></div>
+      <div class="card"><div class="c-ey">Profile Views</div><div class="c-val" id="statViews">—</div><div class="c-sub">past 7 days</div></div>
     </div>
 
     <!-- SHORTLIST PANEL -->
@@ -211,51 +211,22 @@ body{background:var(--g50);font-family:'DM Sans',sans-serif;color:var(--black);-
         <div class="sl-meta">3 / 5 slots &nbsp;·&nbsp; Unused slots expire after 7 days</div>
       </div>
       <div class="sl-body" id="slBody">
-        <div class="sl-item">
-          <div class="sl-av">PS</div>
-          <div class="sl-info"><div class="sl-name">Priya Sharma</div><div class="sl-role">Co-Founder &nbsp;·&nbsp; Engineering / Technical &nbsp;·&nbsp; Mumbai</div></div>
-          <div class="sl-badge">Strong</div>
-          <div class="sl-expiry">5 days left</div>
-          <div class="sl-btns">
-            <button class="sl-btn sl-btn-p" onclick="window.location.href='coattic-find-cofounder.html'">Initiate Alignment</button>
-            <button class="sl-btn sl-btn-s" onclick="removeItem(this)">Remove</button>
-          </div>
-        </div>
-        <div class="sl-item">
-          <div class="sl-av" style="background:var(--g100);color:var(--g600)">RV</div>
-          <div class="sl-info"><div class="sl-name">Rohan Verma</div><div class="sl-role">Co-Founder &nbsp;·&nbsp; Product / Strategy &nbsp;·&nbsp; Bangalore</div></div>
-          <div class="sl-badge" style="color:var(--g600);background:var(--g100);border-color:var(--g200)">Established</div>
-          <div class="sl-expiry">3 days left</div>
-          <div class="sl-btns">
-            <button class="sl-btn sl-btn-p" onclick="window.location.href='coattic-find-cofounder.html'">Initiate Alignment</button>
-            <button class="sl-btn sl-btn-s" onclick="removeItem(this)">Remove</button>
-          </div>
-        </div>
-        <div class="sl-item">
-          <div class="sl-av" style="background:var(--g100);color:var(--g600)">MN</div>
-          <div class="sl-info"><div class="sl-name">Meera Nair</div><div class="sl-role">Co-Founder &nbsp;·&nbsp; Growth / Marketing &nbsp;·&nbsp; Delhi NCR</div></div>
-          <div class="sl-badge">Strong</div>
-          <div class="sl-expiry">1 day left</div>
-          <div class="sl-btns">
-            <button class="sl-btn sl-btn-p" onclick="window.location.href='coattic-find-cofounder.html'">Initiate Alignment</button>
-            <button class="sl-btn sl-btn-s" onclick="removeItem(this)">Remove</button>
-          </div>
-        </div>
+        <div style="padding:24px;text-align:center;color:var(--g400);font-size:13.5px">Loading shortlist…</div>
       </div>
     </div>
 
     <!-- BOTTOM TWO COL -->
     <div class="g2">
       <div class="card">
-        <div class="cc-hd"><div class="cc-title">Profile Completeness</div><div class="cc-pct">72%</div></div>
-        <div class="cc-track"><div class="cc-fill" style="width:72%"></div></div>
-        <div class="cc-items">
-          <div class="cc-item"><div class="cc-dot d">✓</div><div class="cc-text d">Account created</div></div>
-          <div class="cc-item"><div class="cc-dot d">✓</div><div class="cc-text d">Venture overview complete</div></div>
-          <div class="cc-item"><div class="cc-dot d">✓</div><div class="cc-text d">Vision statement added</div></div>
-          <div class="cc-item"><div class="cc-dot d">✓</div><div class="cc-text d">Strategic questions answered</div></div>
-          <div class="cc-item"><div class="cc-dot t"></div><div class="cc-text">Co-founder questions configured</div></div>
-          <div class="cc-item"><div class="cc-dot t"></div><div class="cc-text">First alignment request sent</div></div>
+        <div class="cc-hd"><div class="cc-title">Profile Completeness</div><div class="cc-pct" id="ccPct">0%</div></div>
+        <div class="cc-track"><div class="cc-fill" id="ccFill" style="width:0%"></div></div>
+        <div class="cc-items" id="ccItems">
+          <div class="cc-item"><div class="cc-dot t" id="ck-account"></div><div class="cc-text" id="ck-account-txt">Account created</div></div>
+          <div class="cc-item"><div class="cc-dot t" id="ck-venture"></div><div class="cc-text" id="ck-venture-txt">Venture overview complete</div></div>
+          <div class="cc-item"><div class="cc-dot t" id="ck-vision"></div><div class="cc-text" id="ck-vision-txt">Vision statement added</div></div>
+          <div class="cc-item"><div class="cc-dot t" id="ck-answers"></div><div class="cc-text" id="ck-answers-txt">Strategic questions answered</div></div>
+          <div class="cc-item"><div class="cc-dot t" id="ck-shortlist"></div><div class="cc-text" id="ck-shortlist-txt">First co-founder shortlisted</div></div>
+          <div class="cc-item"><div class="cc-dot t" id="ck-alignment"></div><div class="cc-text" id="ck-alignment-txt">First alignment request sent</div></div>
         </div>
       </div>
       <div class="act-panel">
@@ -291,14 +262,86 @@ const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 
 const roleLabels={founder:'Founder',cofounder:'Co-Founder',team:'Core Team',investor:'Investor'};
 
+/* ── Sign Out ────────────────────────────────────────────── */
+async function handleSignOut(){
+  await sb.auth.signOut();
+  localStorage.clear();
+  window.location.href='coattic-landing.html';
+}
+
+/* ── Helpers ─────────────────────────────────────────────── */
 function setInitials(name){
-  const i=name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()||'M';
+  const i=(name||'').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()||'M';
   document.getElementById('tAvatar').textContent=i;
   document.getElementById('sbAv').textContent=i;
 }
 
+function check(id){
+  const dot=document.getElementById('ck-'+id);
+  const txt=document.getElementById('ck-'+id+'-txt');
+  if(dot){dot.className='cc-dot d';dot.textContent='✓';}
+  if(txt){txt.className='cc-text d';}
+}
+
+/* ── Score dimension bars ────────────────────────────────── */
+function renderScoreBars(profile, shortlistCount){
+  // Profile bar: has name + role + headline + expertise
+  const profileFields=['name','role','headline','expertise','industry','stage','geography'];
+  const profileFilled=profileFields.filter(f=>profile[f]&&profile[f].toString().trim()).length;
+  const profilePct=Math.round((profileFilled/profileFields.length)*100);
+
+  // Vision bar: idea + ambition + ambition_timeline + website
+  const visionFields=['idea','ambition','ambition_timeline'];
+  const visionFilled=visionFields.filter(f=>profile[f]&&profile[f].toString().trim()).length;
+  const visionPct=Math.round((visionFilled/visionFields.length)*100);
+
+  // Answers bar: based on answers object
+  const answers=profile.answers||{};
+  const ansCount=Object.keys(answers).length;
+  const answersPct=Math.min(Math.round((ansCount/8)*100),100);
+
+  // Activity bar: proxy — shortlist count (max 5 = 100%)
+  const activityPct=Math.min(Math.round((shortlistCount/5)*100),100);
+
+  setTimeout(()=>{
+    document.getElementById('barProfile').style.width=profilePct+'%';
+    document.getElementById('barVision').style.width=visionPct+'%';
+    document.getElementById('barAnswers').style.width=answersPct+'%';
+    document.getElementById('barActivity').style.width=activityPct+'%';
+  },100);
+}
+
+/* ── Profile completeness checklist ─────────────────────── */
+function renderCompleteness(profile, shortlistCount, alignmentCount){
+  let done=0;
+  const total=6;
+
+  // 1. Account always done if we're here
+  check('account'); done++;
+
+  // 2. Venture: has industry + stage + geography
+  if(profile.industry&&profile.stage&&profile.geography){check('venture');done++;}
+
+  // 3. Vision: has idea
+  if(profile.idea&&profile.idea.trim()){check('vision');done++;}
+
+  // 4. Answers: has at least 4 strategic answers
+  const ansCount=Object.keys(profile.answers||{}).length;
+  if(ansCount>=4){check('answers');done++;}
+
+  // 5. Shortlist: has at least 1 shortlisted
+  if(shortlistCount>0){check('shortlist');done++;}
+
+  // 6. Alignment: sent at least 1
+  if(alignmentCount>0){check('alignment');done++;}
+
+  const pct=Math.round((done/total)*100);
+  document.getElementById('ccPct').textContent=pct+'%';
+  document.getElementById('ccFill').style.width=pct+'%';
+}
+
+/* ── Main load ───────────────────────────────────────────── */
 async function loadDashboard(){
-  // Check auth
   const {data:{session}}=await sb.auth.getSession();
   if(!session){window.location.href='coattic-auth.html';return;}
 
@@ -306,67 +349,104 @@ async function loadDashboard(){
   const {data:profile,error}=await sb.from('profiles').select('*').eq('id',session.user.id).single();
 
   if(error||!profile){
-    // Fallback to localStorage
+    // Fallback to localStorage if profile not yet saved
     const lp=JSON.parse(localStorage.getItem('coattic_profile')||'{}');
-    const name=localStorage.getItem('coattic_name')||'Member';
+    const name=localStorage.getItem('coattic_name')||session.user.user_metadata?.name||session.user.email?.split('@')[0]||'Member';
     setInitials(name);
     document.getElementById('sbName').textContent=name;
     document.getElementById('sbRole').textContent=roleLabels[lp.role]||'Founder';
-    if(lp.score){document.getElementById('rcScore').textContent=lp.score;document.getElementById('rcBadge').textContent=lp.readiness||'Established';}
-    if(lp.idea){document.getElementById('vcText').textContent='"'+lp.idea+'"';}
+    if(lp.score){
+      document.getElementById('rcScore').textContent=lp.score;
+      document.getElementById('rcBadge').textContent=lp.readiness||'Established';
+    } else {
+      document.getElementById('rcScore').textContent='—';
+      document.getElementById('rcBadge').textContent='Complete profile';
+    }
+    document.getElementById('slBody').innerHTML='<div style="padding:24px;text-align:center;color:var(--g400);font-size:13.5px">No shortlist yet. <a href="coattic-browse.html" style="color:var(--black);font-weight:600">Browse members →</a></div>';
+    document.getElementById('statShortlist').textContent='0';
+    document.getElementById('statShortlistSub').textContent='of 5 slots · 5 available';
+    document.getElementById('statAlignments').textContent='0';
+    document.getElementById('statViews').textContent='0';
     return;
   }
 
-  // Update localStorage with fresh data
+  // Cache fresh data
   localStorage.setItem('coattic_name',profile.name);
-  localStorage.setItem('coattic_email',profile.email);
+  localStorage.setItem('coattic_email',profile.email||'');
   localStorage.setItem('coattic_role',profile.role||'');
   localStorage.setItem('coattic_uid',session.user.id);
 
-  // Render profile data
+  // Render sidebar & topbar
   setInitials(profile.name);
   document.getElementById('sbName').textContent=profile.name;
   document.getElementById('sbRole').textContent=roleLabels[profile.role]||'Founder';
+
+  // Readiness score
   if(profile.score){
     document.getElementById('rcScore').textContent=profile.score;
     document.getElementById('rcBadge').textContent=profile.readiness||'Established';
+  } else {
+    document.getElementById('rcScore').textContent='—';
+    document.getElementById('rcBadge').textContent='Complete profile';
   }
-  if(profile.idea) document.getElementById('vcText').textContent='"'+profile.idea+'"';
+
+  // Vision statement
+  if(profile.idea&&profile.idea.trim()){
+    document.getElementById('vcText').textContent='"'+profile.idea+'"';
+  }
   if(profile.stage||profile.industry||profile.geography){
     const meta=[profile.stage,profile.industry,profile.geography].filter(Boolean).join(' · ');
     document.getElementById('vcStage').textContent=meta;
   }
+  if(profile.name) document.getElementById('vcVenture').textContent=profile.name.split(' ')[0]+"'s Venture";
 
-  // Load shortlist
-  loadShortlist(session.user.id);
-}
+  // Load shortlist + alignment counts in parallel
+  const [slRes,alRes]=await Promise.all([
+    sb.from('shortlist').select('*, candidate:candidate_id(id,name,role,expertise,score,readiness,headline)').eq('founder_id',session.user.id).order('created_at',{ascending:false}),
+    sb.from('alignments').select('id',{count:'exact'}).eq('founder_id',session.user.id)
+  ]);
 
-async function loadShortlist(uid){
-  const {data:shortlist}=await sb.from('shortlist')
-    .select('*, candidate:candidate_id(id,name,role,expertise,score,readiness,headline)')
-    .eq('founder_id',uid)
-    .order('created_at',{ascending:false});
+  const shortlist=slRes.data||[];
+  const alignmentCount=alRes.count||0;
 
-  if(!shortlist||shortlist.length===0) return;
+  // Stats cards
+  const slCount=shortlist.length;
+  const slAvail=Math.max(0,5-slCount);
+  document.getElementById('statShortlist').textContent=slCount;
+  document.getElementById('statShortlistSub').textContent=`of 5 slots · ${slAvail} available`;
+  document.getElementById('statAlignments').textContent=alignmentCount;
+  document.getElementById('statViews').textContent='—'; // no view tracking table yet
 
-  const body=document.getElementById('slBody');
-  body.innerHTML=shortlist.map(item=>{
-    const c=item.candidate;
-    if(!c) return '';
-    const initials=(c.name||'').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
-    const daysLeft=Math.max(0,Math.ceil((new Date(item.expires_at)-new Date())/86400000));
-    const badgeClass=c.readiness==='Strong'?'':'style="color:var(--g600);background:var(--g100);border-color:var(--g200)"';
-    return `<div class="sl-item">
-      <div class="sl-av">${initials}</div>
-      <div class="sl-info"><div class="sl-name">${c.name}</div><div class="sl-role">${roleLabels[c.role]||c.role} &nbsp;·&nbsp; ${c.expertise||''}</div></div>
-      <div class="sl-badge" ${badgeClass}>${c.readiness||'Established'}</div>
-      <div class="sl-expiry">${daysLeft} day${daysLeft!==1?'s':''} left</div>
-      <div class="sl-btns">
-        <button class="sl-btn sl-btn-p" onclick="window.location.href='coattic-find-cofounder.html'">Initiate Alignment</button>
-        <button class="sl-btn sl-btn-s" onclick="removeShortlist('${item.id}',this)">Remove</button>
-      </div>
-    </div>`;
-  }).join('');
+  // Score dimension bars
+  renderScoreBars(profile, slCount);
+
+  // Completeness checklist
+  renderCompleteness(profile, slCount, alignmentCount);
+
+  // Shortlist panel
+  if(slCount===0){
+    document.getElementById('slBody').innerHTML='<div style="padding:24px;text-align:center;color:var(--g400);font-size:13.5px">No shortlist yet. <a href="coattic-browse.html" style="color:var(--black);font-weight:600">Browse members →</a></div>';
+  } else {
+    document.getElementById('slBody').innerHTML=shortlist.map(item=>{
+      const c=item.candidate;
+      if(!c) return '';
+      const initials=(c.name||'').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+      const daysLeft=item.expires_at?Math.max(0,Math.ceil((new Date(item.expires_at)-new Date())/86400000)):7;
+      const isStrong=c.readiness==='Strong';
+      const badgeStyle=isStrong?'':'style="color:var(--g600);background:var(--g100);border-color:var(--g200)"';
+      const avStyle=isStrong?'':' style="background:var(--g100);color:var(--g600)"';
+      return `<div class="sl-item">
+        <div class="sl-av"${avStyle}>${initials}</div>
+        <div class="sl-info"><div class="sl-name">${c.name}</div><div class="sl-role">${roleLabels[c.role]||c.role||''}${c.expertise?' &nbsp;·&nbsp; '+c.expertise:''}</div></div>
+        <div class="sl-badge" ${badgeStyle}>${c.readiness||'Established'}</div>
+        <div class="sl-expiry">${daysLeft} day${daysLeft!==1?'s':''} left</div>
+        <div class="sl-btns">
+          <button class="sl-btn sl-btn-p" onclick="window.location.href='coattic-find-cofounder.html'">Initiate Alignment</button>
+          <button class="sl-btn sl-btn-s" onclick="removeShortlist('${item.id}',this)">Remove</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
 }
 
 async function removeShortlist(id,btn){
@@ -386,10 +466,7 @@ async function submitFb(){
   if(!msg){alert('Please enter your message.');return;}
   closeModal();
   const {data:{session}}=await sb.auth.getSession();
-  await sb.from('feedback').insert({
-    user_id:session?.user?.id||null,
-    type,message:msg
-  });
+  await sb.from('feedback').insert({user_id:session?.user?.id||null,type,message:msg});
   const t=document.createElement('div');
   t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0A0A0A;color:white;padding:11px 20px;border-radius:3px;font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;z-index:700;letter-spacing:.2px';
   t.textContent='Feedback received. Thank you.';document.body.appendChild(t);setTimeout(()=>t.remove(),3000);

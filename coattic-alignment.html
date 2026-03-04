@@ -173,7 +173,7 @@ body{background:var(--g50);font-family:'DM Sans',sans-serif;color:var(--black);-
     <div class="sb-div"></div>
     <div class="sb-label">Account</div>
     <a href="coattic-onboarding.html" class="sb-link">Edit Profile</a>
-    <a href="coattic-landing.html" class="sb-link">Sign Out</a>
+    <button class="sb-link" onclick="handleSignOut()">Sign Out</button>
     <div class="sb-bottom">
       <div class="sbp">
         <div class="sbp-av" id="sbAv">AK</div>
@@ -427,6 +427,17 @@ function closeRequest(){
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+async function handleSignOut(){
+  const _sb=window.supabase.createClient(
+    'https://holytxxscklzivoxzwmd.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvbHl0eHhzY2tseml2b3h6d21kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMjk3NDQsImV4cCI6MjA4NzYwNTc0NH0.5NUHjhHL5n8bIYeeUcGqEx8QOG1G0zJQfCHiyYPRltE'
+  );
+  await _sb.auth.signOut();
+  localStorage.clear();
+  window.location.href='coattic-landing.html';
+}
+</script>
 <script>
 (async()=>{
 const sb=window.supabase.createClient(

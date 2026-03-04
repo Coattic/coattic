@@ -725,14 +725,30 @@ function selectQAns(qid,ansIdx,card){
 
 // ── COMPLETION ──
 function buildCompletion(){
-  // Score calc
-  const ambScores={lifestyle:55,regional:70,national:85,global:95};
-  const base=ambScores[S.ambition]||65;
-  const roleBonus=S.role==='founder'?8:S.role==='cofounder'?6:4;
-  const ansBonus=Math.min(Object.keys(S.answers).length*2,20);
+  // ── Improved Score Calculation ──
+  // Dimension 1: Ambition base (25 pts max)
+  const ambScores={lifestyle:15,regional:18,national:22,global:25};
+  const ambBase=ambScores[S.ambition]||18;
+
+  // Dimension 2: Profile completeness (25 pts max)
+  const profileFields=['role','industry','stage','geography','headline','expertise','years_exp'];
+  const profileFilled=profileFields.filter(f=>S[f]&&S[f].toString().trim()).length;
+  const profileScore=Math.round((profileFilled/profileFields.length)*25);
+
+  // Dimension 3: Vision clarity (25 pts max)
   const visionWords=document.getElementById('visionStatement')?document.getElementById('visionStatement').value.trim().split(/\s+/).filter(Boolean).length:0;
-  const visionBonus=visionWords>30?12:visionWords>10?7:0;
-  const score=Math.min(base+roleBonus+ansBonus+visionBonus,99);
+  const ideaWords=(S.idea||'').split(/\s+/).filter(Boolean).length;
+  const totalVisionWords=visionWords+ideaWords;
+  const visionScore=totalVisionWords>60?25:totalVisionWords>30?18:totalVisionWords>10?12:totalVisionWords>0?6:0;
+
+  // Dimension 4: Strategic answers (25 pts max)
+  const ansCount=Object.keys(S.answers||{}).length;
+  const answerScore=Math.round(Math.min(ansCount/8,1)*25);
+
+  // Role bonus (up to 4 pts)
+  const roleBonus=S.role==='founder'?4:S.role==='cofounder'?3:2;
+
+  const score=Math.min(ambBase+profileScore+visionScore+answerScore+roleBonus,99);
   const readiness=score>=80?'Strong':score>=60?'Established':'Developing';
   const readinessBg=score>=80?'var(--black)':score>=60?'var(--g700)':'var(--g500)';
 

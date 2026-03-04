@@ -400,6 +400,7 @@ footer{background:var(--black);padding:36px 56px;display:flex;align-items:center
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 window.addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',window.scrollY>30)});
 function toggleNav(){document.getElementById('mobileNav').classList.toggle('open')}
@@ -416,6 +417,25 @@ function submitFeedback(){
   document.body.appendChild(t);
   setTimeout(()=>t.remove(),3200);
 }
+
+// Auth-aware navigation: if already signed in, send to dashboard
+(async()=>{
+  const sb=window.supabase.createClient(
+    'https://holytxxscklzivoxzwmd.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvbHl0eHhzY2tseml2b3h6d21kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMjk3NDQsImV4cCI6MjA4NzYwNTc0NH0.5NUHjhHL5n8bIYeeUcGqEx8QOG1G0zJQfCHiyYPRltE'
+  );
+  const {data:{session}}=await sb.auth.getSession();
+  if(session){
+    // Already logged in — swap all CTA links to dashboard
+    document.querySelectorAll('a[href="coattic-auth.html"]').forEach(a=>{
+      if(a.textContent.trim()==='Access Your Network'||a.textContent.trim()==='Apply for Membership'||a.classList.contains('nav-apply')||a.classList.contains('nav-signin')||a.classList.contains('mn-apply')||a.classList.contains('btn-primary')){
+        a.href='coattic-dashboard.html';
+        if(a.textContent.trim()==='Apply for Membership') a.textContent='Go to Dashboard →';
+        if(a.textContent.trim()==='Access Your Network') a.textContent='My Dashboard';
+      }
+    });
+  }
+})();
 </script>
 </body>
 </html>
