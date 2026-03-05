@@ -406,7 +406,8 @@ async function loadDashboard(){
     const meta=[profile.stage,profile.industry,profile.geography].filter(Boolean).join(' · ');
     document.getElementById('vcStage').textContent=meta;
   }
-  if(profile.name) document.getElementById('vcVenture').textContent=profile.name.split(' ')[0]+"'s Venture";
+  const vn=profile.venture_name||(profile.industry?profile.industry+(profile.stage?' · '+profile.stage:''):null);
+  if(vn) document.getElementById('vcVenture').textContent=vn;
 
   // Load shortlist + try alignment counts in parallel
   const [slRes,alRes]=await Promise.all([
