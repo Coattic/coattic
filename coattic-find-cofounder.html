@@ -207,27 +207,7 @@ body{background:var(--g50);font-family:'DM Sans',sans-serif;color:var(--black);-
           </div>
         </div>
         <div class="shortlist-row" id="candidateGrid">
-          <div class="sl-card" onclick="toggleCandidate(this,'Priya Sharma','PS','#1A1A1A')">
-            <div class="slc-check"></div>
-            <div class="slc-av" style="background:#1A1A1A">PS</div>
-            <div class="slc-name">Priya Sharma</div>
-            <div class="slc-role">Co-Founder &nbsp;·&nbsp; Technical</div>
-            <div class="slc-badge">Strong</div>
-          </div>
-          <div class="sl-card" onclick="toggleCandidate(this,'Rohan Verma','RV','#2A2A2A')">
-            <div class="slc-check"></div>
-            <div class="slc-av" style="background:#2A2A2A">RV</div>
-            <div class="slc-name">Rohan Verma</div>
-            <div class="slc-role">Co-Founder &nbsp;·&nbsp; Product</div>
-            <div class="slc-badge" style="color:var(--g600);background:var(--g100);border-color:var(--g200)">Established</div>
-          </div>
-          <div class="sl-card" onclick="toggleCandidate(this,'Meera Nair','MN','#1A1A1A')">
-            <div class="slc-check"></div>
-            <div class="slc-av" style="background:#1A1A1A">MN</div>
-            <div class="slc-name">Meera Nair</div>
-            <div class="slc-role">Co-Founder &nbsp;·&nbsp; Growth</div>
-            <div class="slc-badge">Strong</div>
-          </div>
+          <div style="color:var(--g400);font-size:13.5px;padding:24px">Loading your shortlist…</div>
         </div>
         <div class="nav-btns">
           <button class="btn-next" id="btn1" onclick="goStep(2)" disabled>Configure Questions →</button>
@@ -286,15 +266,21 @@ body{background:var(--g50);font-family:'DM Sans',sans-serif;color:var(--black);-
   </main>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const name=localStorage.getItem('coattic_name')||'Member';
-const initials=name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()||'M';
-document.getElementById('tAvatar').textContent=initials;
-document.getElementById('sbAv').textContent=initials;
-document.getElementById('sbName').textContent=name;
+const SUPABASE_URL='https://holytxxscklzivoxzwmd.supabase.co';
+const SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvbHl0eHhzY2tseml2b3h6d21kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMjk3NDQsImV4cCI6MjA4NzYwNTc0NH0.5NUHjhHL5n8bIYeeUcGqEx8QOG1G0zJQfCHiyYPRltE';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 
+let currentUserId=null;
 let selectedCandidates=[];
-let selectedQs={};// {qId: {text, answer, answerText, importance, type}}
+let selectedQs={};
+
+async function handleSignOut(){
+  await sb.auth.signOut();
+  localStorage.clear();
+  window.location.href='coattic-landing.html';
+}
 
 // QUESTION BANK
 const ALL_QS=[
@@ -336,11 +322,9 @@ function renderQBank(){
       </div>
     </div>
   `).join('');
-  // Init importance defaults
-  ALL_QS.forEach(q=>{if(!selectedQs[q.id])return;selectedQs[q.id].importance='Low';});
 }
 
-function escStr(s){return s.replace(/'/g,"\\'")}
+function escStr(s){return s.replace(/'/g,"\'")}
 
 function toggleQCard(id){
   const card=document.getElementById('qcard-'+id);
@@ -357,16 +341,9 @@ function selectPref(qId,ansIdx,ansText,e){
   e.target.closest('.qc-opt').classList.add('pref');
   const q=ALL_QS.find(x=>x.id===qId);
   if(!selectedQs[qId]){
-    // Auto-select this question if not already selected
-    if(Object.keys(selectedQs).length<5){
-      selectedQs[qId]={text:q.text,answer:ansIdx,answerText:ansText,importance:'Low',type:q.type};
-      card.classList.add('sel');
-      document.getElementById('qsel-'+qId).textContent='✓';
-    } else {
-      selectedQs[qId]={text:q.text,answer:ansIdx,answerText:ansText,importance:'Low',type:q.type};
-      card.classList.add('sel');
-      document.getElementById('qsel-'+qId).textContent='✓';
-    }
+    selectedQs[qId]={text:q.text,answer:ansIdx,answerText:ansText,importance:'Low',type:q.type};
+    card.classList.add('sel');
+    document.getElementById('qsel-'+qId).textContent='✓';
   } else {
     selectedQs[qId].answer=ansIdx;
     selectedQs[qId].answerText=ansText;
@@ -386,10 +363,17 @@ function updateSelCount(){
   document.getElementById('btn2').disabled=count<5;
 }
 
-function toggleCandidate(card,name,initials,color){
-  const idx=selectedCandidates.findIndex(c=>c.name===name);
-  if(idx>=0){selectedCandidates.splice(idx,1);card.classList.remove('sel');card.querySelector('.slc-check').textContent='';}
-  else{selectedCandidates.push({name,initials,color});card.classList.add('sel');card.querySelector('.slc-check').textContent='✓';}
+function toggleCandidate(card,candidateId,name,initials,color){
+  const idx=selectedCandidates.findIndex(c=>c.id===candidateId);
+  if(idx>=0){
+    selectedCandidates.splice(idx,1);
+    card.classList.remove('sel');
+    card.querySelector('.slc-check').textContent='';
+  } else {
+    selectedCandidates.push({id:candidateId,name,initials,color});
+    card.classList.add('sel');
+    card.querySelector('.slc-check').textContent='✓';
+  }
   document.getElementById('btn1').disabled=selectedCandidates.length===0;
 }
 
@@ -404,7 +388,6 @@ function goStep(n){
 }
 
 function buildReview(){
-  // Q list
   const ql=document.getElementById('reviewQList');
   ql.innerHTML=Object.entries(selectedQs).map(([id,q],i)=>`
     <div class="rp-q">
@@ -414,7 +397,6 @@ function buildReview(){
       <div class="rp-q-imp ${(q.importance||'Low').toLowerCase()}">Importance: ${q.importance||'Low'}</div>
     </div>
   `).join('');
-  // Recipients
   const rl=document.getElementById('recipientList');
   rl.innerHTML=selectedCandidates.map(c=>`
     <div class="r-item">
@@ -425,7 +407,21 @@ function buildReview(){
   `).join('');
 }
 
-function sendRequest(){
+async function sendRequest(){
+  // Save alignment requests to Supabase
+  const questions=Object.entries(selectedQs).map(([id,q])=>({
+    qId:id, text:q.text, answer:q.answer, answerText:q.answerText, importance:q.importance, type:q.type
+  }));
+  for(const candidate of selectedCandidates){
+    try{
+      await sb.from('shortlist').upsert({
+        founder_id:currentUserId,
+        candidate_id:candidate.id,
+        alignment_requested:true,
+        questions:questions
+      },{onConflict:'founder_id,candidate_id'});
+    }catch(e){console.error('Send error:',e);}
+  }
   document.getElementById('mainFlow').style.display='none';
   document.getElementById('sentPanel').style.display='block';
   const sr=document.getElementById('sentRecipients');
@@ -438,42 +434,59 @@ function sendRequest(){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// Init
-renderQBank();
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-async function handleSignOut(){
-  const _sb=window.supabase.createClient(
-    'https://holytxxscklzivoxzwmd.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvbHl0eHhzY2tseml2b3h6d21kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMjk3NDQsImV4cCI6MjA4NzYwNTc0NH0.5NUHjhHL5n8bIYeeUcGqEx8QOG1G0zJQfCHiyYPRltE'
-  );
-  await _sb.auth.signOut();
-  localStorage.clear();
-  window.location.href='coattic-landing.html';
+function renderCandidateGrid(shortlist){
+  const grid=document.getElementById('candidateGrid');
+  if(!shortlist||shortlist.length===0){
+    grid.innerHTML='<div style="color:var(--g400);font-size:13.5px;padding:24px">Your shortlist is empty. <a href="coattic-browse.html" style="color:var(--black);font-weight:600">Browse members →</a></div>';
+    return;
+  }
+  const roleLabels={founder:'Founder',cofounder:'Co-Founder',team:'Core Team',investor:'Investor'};
+  grid.innerHTML=shortlist.map(item=>{
+    const p=item.candidate;
+    if(!p) return '';
+    const name=p.name||'Member';
+    const initials=name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+    const role=roleLabels[p.role]||p.role||'Member';
+    const expertise=p.expertise||'';
+    const readiness=p.readiness||'Developing';
+    const color=readiness==='Strong'?'#1A1A1A':readiness==='Established'?'#2A2A2A':'#444';
+    const badgeStyle=readiness==='Strong'?'':readiness==='Established'?'color:var(--g600);background:var(--g100);border-color:var(--g200)':'color:var(--g500);background:var(--g50);border-color:var(--g200)';
+    return `<div class="sl-card" onclick="toggleCandidate(this,'${p.id}','${name.replace(/'/g,"\'")}','${initials}','${color}')">
+      <div class="slc-check"></div>
+      <div class="slc-av" style="background:${color}">${initials}</div>
+      <div class="slc-name">${name}</div>
+      <div class="slc-role">${role}${expertise?' &nbsp;·&nbsp; '+expertise:''}</div>
+      <div class="slc-badge" style="${badgeStyle}">${readiness}</div>
+    </div>`;
+  }).join('');
 }
-</script>
-<script>
+
+// Init
 (async()=>{
-const sb=window.supabase.createClient(
-  'https://holytxxscklzivoxzwmd.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvbHl0eHhzY2tseml2b3h6d21kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMjk3NDQsImV4cCI6MjA4NzYwNTc0NH0.5NUHjhHL5n8bIYeeUcGqEx8QOG1G0zJQfCHiyYPRltE'
-);
-const {data:{session}}=await sb.auth.getSession();
-if(!session){window.location.href='coattic-auth.html';return;}
-const n=session.user.user_metadata?.name||localStorage.getItem('coattic_name')||'Member';
-const i=n.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
-const av=document.getElementById('tAvatar');
-const sav=document.getElementById('sbAv');
-const sn=document.getElementById('sbName');
-if(av)av.textContent=i;
-if(sav)sav.textContent=i;
-if(sn)sn.textContent=n;
-localStorage.setItem('coattic_name',n);
-localStorage.setItem('coattic_uid',session.user.id);
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){window.location.href='coattic-auth.html';return;}
+  currentUserId=session.user.id;
+
+  const name=session.user.user_metadata?.name||localStorage.getItem('coattic_name')||'Member';
+  const initials=name.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+  const av=document.getElementById('tAvatar');
+  const sav=document.getElementById('sbAv');
+  const sn=document.getElementById('sbName');
+  if(av)av.textContent=initials;
+  if(sav)sav.textContent=initials;
+  if(sn)sn.textContent=name;
+  localStorage.setItem('coattic_name',name);
+
+  // Load real shortlist
+  const {data:shortlist,error}=await sb
+    .from('shortlist')
+    .select('id, candidate:candidate_id(id,name,role,expertise,readiness)')
+    .eq('founder_id',currentUserId);
+
+  if(error) console.error('Shortlist load error:',error.message);
+  renderCandidateGrid(shortlist||[]);
+  renderQBank();
 })();
 </script>
-
 </body>
 </html>
