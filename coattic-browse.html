@@ -146,13 +146,13 @@ body{background:var(--g50);font-family:'DM Sans',sans-serif;color:var(--black);-
       <div class="slot-left">
         <div class="slot-label">Shortlist Slots</div>
         <div class="slot-dots">
-          <div class="slot-dot"></div>
-          <div class="slot-dot"></div>
-          <div class="slot-dot"></div>
-          <div class="slot-dot empty"></div>
-          <div class="slot-dot empty"></div>
+          <div class="slot-dot empty" id="dot0"></div>
+          <div class="slot-dot empty" id="dot1"></div>
+          <div class="slot-dot empty" id="dot2"></div>
+          <div class="slot-dot empty" id="dot3"></div>
+          <div class="slot-dot empty" id="dot4"></div>
         </div>
-        <div class="slot-meta">3 of 5 used</div>
+        <div class="slot-meta" id="slotMeta">0 of 5 used</div>
       </div>
       <a href="coattic-find-cofounder.html" class="slot-cta">Initiate alignment for shortlisted members →</a>
     </div>
@@ -168,11 +168,39 @@ body{background:var(--g50);font-family:'DM Sans',sans-serif;color:var(--black);-
       <button class="filter-btn" onclick="filterBy(this,'strong')">Strong Only</button>
     </div>
 
-    <!-- MEMBER CARDS — loaded from Supabase -->
+    <!-- MEMBER CARDS — dynamic from Supabase -->
     <div class="members-grid" id="membersGrid">
       <div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--g400);font-size:13.5px">Loading members…</div>
-    </div>TYPE html>
-<html lang="en">
+    </div>
+  </main>
+</div>
+
+<!-- SHORTLIST CONFIRM MODAL -->
+<div class="overlay" id="slModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-icon">✓</div>
+    <div class="modal-title" id="slModalTitle">Shortlist confirmed.</div>
+    <div class="modal-sub" id="slModalSub">Added to your shortlist. When ready, initiate a structured alignment request from your Find Co-Founder page.</div>
+    <div class="modal-btns">
+      <button class="m-cancel" onclick="closeModal()">Continue Browsing</button>
+      <button class="m-confirm" onclick="window.location.href='coattic-find-cofounder.html'">Initiate Alignment →</button>
+    </div>
+  </div>
+</div>
+
+<!-- SLOTS FULL MODAL -->
+<div class="overlay" id="fullModal" onclick="if(event.target===this)document.getElementById('fullModal').classList.remove('open')">
+  <div class="modal">
+    <div class="modal-icon" style="background:var(--g400)">!</div>
+    <div class="modal-title">Shortlist is full.</div>
+    <div class="modal-sub">You have reached the 5-slot limit. Remove a member from your shortlist or initiate an alignment request to free a slot.</div>
+    <div class="modal-btns">
+      <button class="m-cancel" onclick="document.getElementById('fullModal').classList.remove('open')">Close</button>
+      <button class="m-confirm" onclick="window.location.href='coattic-dashboard.html'">Manage Shortlist →</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL='https://holytxxscklzivoxzwmd.supabase.co';
@@ -226,9 +254,8 @@ async function shortlist(btn,memberId,memberName){
 }
 
 function updateSlotBar(){
-  const dots=document.querySelectorAll('.slot-dot');
-  dots.forEach((d,i)=>d.classList.toggle('empty',i>=slotCount));
-  document.querySelector('.slot-meta').textContent=slotCount+' of 5 used';
+  for(let i=0;i<5;i++){const d=document.getElementById('dot'+i);if(d)d.classList.toggle('empty',i>=slotCount);}
+  const sm=document.getElementById('slotMeta');if(sm)sm.textContent=slotCount+' of 5 used';
 }
 
 function renderMembers(members){
