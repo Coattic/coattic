@@ -188,11 +188,11 @@ body{background:var(--g50);font-family:'DM Sans',sans-serif;color:var(--black);-
       <div class="result-header">
         <div class="rh-top">
           <div class="rh-profile">
-            <div class="rh-av" style="background:#1A1A1A">PS</div>
+            <div class="rh-av" id="rhAv" style="background:#1A1A1A">—</div>
             <div>
-              <div class="rh-name">Priya Sharma</div>
-              <div class="rh-role">Co-Founder &nbsp;·&nbsp; Engineering / Technical &nbsp;·&nbsp; Mumbai</div>
-              <div class="rh-level strong" style="margin-top:8px">Strong Alignment</div>
+              <div class="rh-name" id="rhName">Loading…</div>
+              <div class="rh-role" id="rhRole"></div>
+              <div class="rh-level strong" id="rhLevel" style="margin-top:8px">—</div>
             </div>
           </div>
           <div class="rh-score-wrap">
@@ -234,74 +234,7 @@ body{background:var(--g50);font-family:'DM Sans',sans-serif;color:var(--black);-
       <div class="breakdown-panel">
         <div class="bp-title">Question-by-Question Breakdown</div>
         <div class="bp-sub">Your preferred answers compared to the candidate's actual responses. This data is visible only to you.</div>
-        <div class="q-results">
-
-          <div class="q-result">
-            <div class="qr-top">
-              <div class="qr-num">01 &nbsp;·&nbsp; Strategic</div>
-              <div class="qr-imp high">High Importance</div>
-            </div>
-            <div class="qr-question">How should the company scale in its early stages?</div>
-            <div class="qr-answers">
-              <div class="qr-ans founder-pref"><div class="qr-ans-label">Your preference</div>Capital-efficient iteration</div>
-              <div class="qr-ans match"><div class="qr-ans-label">Their answer ✓ Match</div>Capital-efficient iteration</div>
-            </div>
-            <div class="qr-score-row"><div class="qr-score-lbl">Raw score: 100 &nbsp;·&nbsp; Weighted (High ×2)</div><div class="qr-score-val">200 pts</div></div>
-          </div>
-
-          <div class="q-result">
-            <div class="qr-top">
-              <div class="qr-num">02 &nbsp;·&nbsp; Strategic</div>
-              <div class="qr-imp medium">Medium Importance</div>
-            </div>
-            <div class="qr-question">What level of commitment do you expect from a co-founder from day one?</div>
-            <div class="qr-answers">
-              <div class="qr-ans founder-pref"><div class="qr-ans-label">Your preference</div>Full-time from Day 1, no exceptions</div>
-              <div class="qr-ans match"><div class="qr-ans-label">Their answer ✓ Match</div>Full-time from Day 1, no exceptions</div>
-            </div>
-            <div class="qr-score-row"><div class="qr-score-lbl">Raw score: 100 &nbsp;·&nbsp; Weighted (Medium ×1.5)</div><div class="qr-score-val">150 pts</div></div>
-          </div>
-
-          <div class="q-result">
-            <div class="qr-top">
-              <div class="qr-num">03 &nbsp;·&nbsp; Strategic</div>
-              <div class="qr-imp high">High Importance</div>
-            </div>
-            <div class="qr-question">What type of company are you committed to building?</div>
-            <div class="qr-answers">
-              <div class="qr-ans founder-pref"><div class="qr-ans-label">Your preference</div>Venture-backed targeting global scale</div>
-              <div class="qr-ans match"><div class="qr-ans-label">Their answer ✓ Match</div>Venture-backed targeting global scale</div>
-            </div>
-            <div class="qr-score-row"><div class="qr-score-lbl">Raw score: 100 &nbsp;·&nbsp; Weighted (High ×2)</div><div class="qr-score-val">200 pts</div></div>
-          </div>
-
-          <div class="q-result">
-            <div class="qr-top">
-              <div class="qr-num">04 &nbsp;·&nbsp; Nature</div>
-              <div class="qr-imp medium">Medium Importance</div>
-            </div>
-            <div class="qr-question">Your natural leadership orientation is:</div>
-            <div class="qr-answers">
-              <div class="qr-ans founder-pref"><div class="qr-ans-label">Your preference</div>Vision-driven and long-horizon strategic</div>
-              <div class="qr-ans no-match"><div class="qr-ans-label">Their answer — No match</div>Execution-focused and operationally rigorous</div>
-            </div>
-            <div class="qr-score-row"><div class="qr-score-lbl">Raw score: 10 &nbsp;·&nbsp; Weighted (Medium ×1.5) — Complementary, not conflicting</div><div class="qr-score-val">15 pts</div></div>
-          </div>
-
-          <div class="q-result">
-            <div class="qr-top">
-              <div class="qr-num">05 &nbsp;·&nbsp; Nature</div>
-              <div class="qr-imp low">Low Importance</div>
-            </div>
-            <div class="qr-question">Your preferred work intensity is:</div>
-            <div class="qr-answers">
-              <div class="qr-ans founder-pref"><div class="qr-ans-label">Your preference</div>High intensity — long hours during build phase</div>
-              <div class="qr-ans match"><div class="qr-ans-label">Their answer ✓ Match</div>High intensity — long hours during build phase</div>
-            </div>
-            <div class="qr-score-row"><div class="qr-score-lbl">Raw score: 100 &nbsp;·&nbsp; Weighted (Low ×1)</div><div class="qr-score-val">100 pts</div></div>
-          </div>
-
-        </div>
+        <div class="q-results" id="qResults"><div style="padding:24px;color:var(--g400);font-size:13.5px">Loading…</div></div>
       </div>
 
       <!-- FULL PROFILE UNLOCK -->
@@ -310,16 +243,9 @@ body{background:var(--g50);font-family:'DM Sans',sans-serif;color:var(--black);-
         <div class="bp-sub">Strong alignment unlocks the candidate's full vision statement and detailed background. Contact details remain locked until both parties confirm they wish to proceed.</div>
         <div class="vision-reveal">
           <div class="vision-reveal-label">Vision Statement</div>
-          <div class="vision-reveal-text">"I want to build the technical backbone for India's EdTech ecosystem — a platform that 1,000 founders build on top of, not one more consumer app. In 7 years, I want to look back and know our infrastructure processed 50 million student journeys."</div>
+          <div class="vision-reveal-text" id="candidateVision">—</div>
         </div>
-        <div class="profile-grid">
-          <div class="pf"><div class="pf-label">Startup Experience</div><div class="pf-val">Early-stage (2 companies)</div></div>
-          <div class="pf"><div class="pf-label">Financial Runway</div><div class="pf-val">12+ months</div></div>
-          <div class="pf"><div class="pf-label">Transition Timeline</div><div class="pf-val">Full-time immediately</div></div>
-          <div class="pf"><div class="pf-label">Equity Expectation</div><div class="pf-val">Role-based, vesting</div></div>
-          <div class="pf"><div class="pf-label">Capital Contribution</div><div class="pf-val">Yes, if comfortable</div></div>
-          <div class="pf"><div class="pf-label">Conflict Style</div><div class="pf-val">Direct and immediate</div></div>
-        </div>
+        <div class="profile-grid" id="profileGrid"></div>
       </div>
 
       <!-- FOUNDER JUDGMENT -->
@@ -355,7 +281,7 @@ body{background:var(--g50);font-family:'DM Sans',sans-serif;color:var(--black);-
     <div class="confirmed-panel" id="confirmedPanel">
       <div class="cp-rule"></div>
       <div class="cp-title">Introduction confirmed.</div>
-      <div class="cp-sub">Priya Sharma has been notified and asked to confirm mutual interest. Once she confirms, your private "Let's Discuss" room opens.</div>
+      <div class="cp-sub" id="cpSub">The candidate has been notified and asked to confirm mutual interest. Once they confirm, your private "Let's Discuss" room opens.</div>
       <a href="coattic-discuss.html" class="cp-btn">Open Let's Discuss →</a>
     </div>
   </main>
@@ -377,35 +303,25 @@ body{background:var(--g50);font-family:'DM Sans',sans-serif;color:var(--black);-
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const name=localStorage.getItem('coattic_name')||'Member';
-const initials=name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()||'M';
-document.getElementById('tAvatar').textContent=initials;
-document.getElementById('sbAv').textContent=initials;
-document.getElementById('sbName').textContent=name;
+const SUPABASE_URL='https://holytxxscklzivoxzwmd.supabase.co';
+const SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvbHl0eHhzY2tseml2b3h6d21kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMjk3NDQsImV4cCI6MjA4NzYwNTc0NH0.5NUHjhHL5n8bIYeeUcGqEx8QOG1G0zJQfCHiyYPRltE';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 
-// Animate score
-const targetScore=83;
-let n=0;
-const scoreEl=document.getElementById('displayScore');
-const t=setInterval(()=>{n=Math.min(n+2,targetScore);scoreEl.textContent=n;if(n>=targetScore)clearInterval(t)},18);
+async function handleSignOut(){
+  await sb.auth.signOut();
+  localStorage.clear();
+  window.location.href='coattic-landing.html';
+}
 
-// Animate bars after short delay
-const dims={vision:92,risk:88,commit:95,leader:42,style:88};
-setTimeout(()=>{
-  Object.entries(dims).forEach(([k,v])=>{
-    document.getElementById('bar-'+k).style.height=v+'%';
-    setTimeout(()=>document.getElementById('pct-'+k).textContent=v+'%',300);
-  });
-},400);
-
-// Judgment slider
 function updateJudgment(){
   const j=parseInt(document.getElementById('judgmentSlider').value);
   document.getElementById('judgmentVal').textContent=j;
-  const mcq=665;const maxMcq=850;
-  const mcqNorm=(mcq/maxMcq)*100;
-  const final=Math.round(mcqNorm*0.4+80*0.3+j*0.3);// 80 = keyword estimate
+  const mcqScore=window._mcqScore||665;
+  const maxMcq=window._maxMcq||850;
+  const mcqNorm=(mcqScore/maxMcq)*100;
+  const final=Math.round(mcqNorm*0.4+80*0.3+j*0.3);
   document.getElementById('finalScore').textContent=Math.min(final,99);
 }
 
@@ -414,7 +330,6 @@ function confirmProceed(){
   document.getElementById('confirmedPanel').style.display='block';
   window.scrollTo({top:0,behavior:'smooth'});
 }
-
 function showCloseModal(){document.getElementById('closeModal').classList.add('open')}
 function closeRequest(){
   document.getElementById('closeModal').classList.remove('open');
@@ -424,40 +339,118 @@ function closeRequest(){
   document.body.appendChild(t);
   setTimeout(()=>{t.remove();window.location.href='coattic-find-cofounder.html'},2800);
 }
-</script>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-async function handleSignOut(){
-  const _sb=window.supabase.createClient(
-    'https://holytxxscklzivoxzwmd.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvbHl0eHhzY2tseml2b3h6d21kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMjk3NDQsImV4cCI6MjA4NzYwNTc0NH0.5NUHjhHL5n8bIYeeUcGqEx8QOG1G0zJQfCHiyYPRltE'
-  );
-  await _sb.auth.signOut();
-  localStorage.clear();
-  window.location.href='coattic-landing.html';
-}
-</script>
-<script>
 (async()=>{
-const sb=window.supabase.createClient(
-  'https://holytxxscklzivoxzwmd.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvbHl0eHhzY2tseml2b3h6d21kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMjk3NDQsImV4cCI6MjA4NzYwNTc0NH0.5NUHjhHL5n8bIYeeUcGqEx8QOG1G0zJQfCHiyYPRltE'
-);
-const {data:{session}}=await sb.auth.getSession();
-if(!session){window.location.href='coattic-auth.html';return;}
-const n=session.user.user_metadata?.name||localStorage.getItem('coattic_name')||'Member';
-const i=n.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
-const av=document.getElementById('tAvatar');
-const sav=document.getElementById('sbAv');
-const sn=document.getElementById('sbName');
-if(av)av.textContent=i;
-if(sav)sav.textContent=i;
-if(sn)sn.textContent=n;
-localStorage.setItem('coattic_name',n);
-localStorage.setItem('coattic_uid',session.user.id);
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){window.location.href='coattic-auth.html';return;}
+
+  const name=session.user.user_metadata?.name||localStorage.getItem('coattic_name')||'Member';
+  const initials=name.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+  if(document.getElementById('tAvatar')) document.getElementById('tAvatar').textContent=initials;
+  if(document.getElementById('sbAv')) document.getElementById('sbAv').textContent=initials;
+  if(document.getElementById('sbName')) document.getElementById('sbName').textContent=name;
+  localStorage.setItem('coattic_name',name);
+
+  // Get candidate_id from URL param or localStorage
+  const params=new URLSearchParams(window.location.search);
+  const candidateId=params.get('candidate')||localStorage.getItem('coattic_alignment_candidate');
+
+  if(!candidateId){
+    // No candidate specified — show empty state
+    document.getElementById('rhName').textContent='No alignment selected';
+    document.getElementById('qResults').innerHTML='<div style="padding:24px;color:var(--g400);font-size:13.5px">No alignment data. <a href="coattic-find-cofounder.html" style="color:var(--black);font-weight:600">Go to Find Co-Founder →</a></div>';
+    return;
+  }
+
+  // Load candidate profile
+  const {data:candidate}=await sb.from('profiles').select('*').eq('id',candidateId).single();
+  const roleLabels={founder:'Founder',cofounder:'Co-Founder',team:'Core Team',investor:'Investor'};
+
+  if(candidate){
+    const cn=candidate.name||'Candidate';
+    const ci=cn.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+    const cr=roleLabels[candidate.role]||candidate.role||'Member';
+    const cg=candidate.geography||'';
+    const ce=candidate.expertise||'';
+    if(document.getElementById('rhAv')) document.getElementById('rhAv').textContent=ci;
+    if(document.getElementById('rhName')) document.getElementById('rhName').textContent=cn;
+    if(document.getElementById('rhRole')) document.getElementById('rhRole').textContent=cr+(ce?' · '+ce:'')+(cg?' · '+cg:'');
+
+    // Vision reveal
+    if(document.getElementById('candidateVision')) document.getElementById('candidateVision').textContent=candidate.idea?'"'+candidate.idea+'"':'Not provided';
+
+    // Profile grid
+    const fields=[
+      ['Expertise',candidate.expertise],['Experience',candidate.years_exp],
+      ['Availability',candidate.availability],['Work Mode',candidate.work_mode],
+      ['Stage',candidate.stage],['Geography',candidate.geography]
+    ].filter(f=>f[1]);
+    if(document.getElementById('profileGrid')){
+      document.getElementById('profileGrid').innerHTML=fields.map(f=>`<div class="pf"><div class="pf-label">${f[0]}</div><div class="pf-val">${f[1]}</div></div>`).join('');
+    }
+
+    // Load alignment questions from shortlist table
+    const {data:sl}=await sb.from('shortlist').select('questions,answers').eq('founder_id',session.user.id).eq('candidate_id',candidateId).single();
+
+    if(sl&&sl.questions&&sl.questions.length>0){
+      const questions=sl.questions;
+      const candidateAnswers=sl.answers||{};
+      let totalScore=0;let maxScore=0;
+      const impMult={Low:1,Medium:1.5,High:2};
+
+      const qHtml=questions.map((q,i)=>{
+        const imp=q.importance||'Low';
+        const mult=impMult[imp]||1;
+        const founderAns=q.answer;
+        const candidateAns=candidateAnswers[q.qId];
+        const isMatch=candidateAns!==undefined&&candidateAns===founderAns;
+        const isNature=q.type==='Nature';
+        const raw=isMatch?100:isNature?10:0;
+        const weighted=Math.round(raw*mult);
+        totalScore+=weighted;
+        maxScore+=Math.round(100*mult);
+        const matchClass=isMatch?'match':'no-match';
+        const matchLabel=isMatch?'✓ Match':'— No match';
+        const founderText=q.opts?q.opts[founderAns]:(q.answerText||'—');
+        const candidateText=candidateAns!==undefined&&q.opts?q.opts[candidateAns]:'Not answered';
+        return `<div class="q-result">
+          <div class="qr-top"><div class="qr-num">${String(i+1).padStart(2,'0')} · ${q.type}</div><div class="qr-imp ${imp.toLowerCase()}">${imp} Importance</div></div>
+          <div class="qr-question">${q.text}</div>
+          <div class="qr-answers">
+            <div class="qr-ans founder-pref"><div class="qr-ans-label">Your preference</div>${founderText}</div>
+            <div class="qr-ans ${matchClass}"><div class="qr-ans-label">Their answer ${matchLabel}</div>${candidateText}</div>
+          </div>
+          <div class="qr-score-row"><div class="qr-score-lbl">Raw score: ${raw} · Weighted (${imp} ×${mult})</div><div class="qr-score-val">${weighted} pts</div></div>
+        </div>`;
+      }).join('');
+
+      document.getElementById('qResults').innerHTML=qHtml;
+      window._mcqScore=totalScore;
+      window._maxMcq=maxScore;
+
+      // Animate score
+      const pct=maxScore>0?Math.round((totalScore/maxScore)*100):0;
+      const level=pct>=80?'Strong Alignment':pct>=60?'Established Alignment':'Developing Alignment';
+      const levelClass=pct>=80?'strong':pct>=60?'established':'developing';
+      if(document.getElementById('rhLevel')){document.getElementById('rhLevel').textContent=level;document.getElementById('rhLevel').className='rh-level '+levelClass;}
+      let n=0;const scoreEl=document.getElementById('displayScore');
+      const t=setInterval(()=>{n=Math.min(n+2,pct);scoreEl.textContent=n;if(n>=pct)clearInterval(t);},18);
+      setTimeout(()=>{
+        const dims={vision:Math.min(pct+10,100),risk:pct,commit:Math.min(pct+5,100),leader:Math.max(pct-20,0),style:pct};
+        Object.entries(dims).forEach(([k,v])=>{
+          const el=document.getElementById('bar-'+k);if(el)el.style.height=v+'%';
+          setTimeout(()=>{const p=document.getElementById('pct-'+k);if(p)p.textContent=v+'%';},300);
+        });
+      },400);
+    } else {
+      // No questions yet - show demo scores
+      document.getElementById('qResults').innerHTML='<div style="padding:24px;color:var(--g400);font-size:13.5px">Alignment questions not yet answered by this candidate.</div>';
+      const demoScore=candidate.score||50;
+      let n=0;const scoreEl=document.getElementById('displayScore');
+      const t=setInterval(()=>{n=Math.min(n+2,demoScore);scoreEl.textContent=n;if(n>=demoScore)clearInterval(t);},18);
+    }
+  }
 })();
 </script>
-
 </body>
 </html>

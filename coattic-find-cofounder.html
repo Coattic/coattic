@@ -408,9 +408,9 @@ function buildReview(){
 }
 
 async function sendRequest(){
-  // Save alignment requests to Supabase
   const questions=Object.entries(selectedQs).map(([id,q])=>({
-    qId:id, text:q.text, answer:q.answer, answerText:q.answerText, importance:q.importance, type:q.type
+    qId:id, text:q.text, answer:q.answer, answerText:q.answerText, importance:q.importance, type:q.type,
+    opts:ALL_QS.find(x=>x.id===id)?.opts||[]
   }));
   for(const candidate of selectedCandidates){
     try{
@@ -422,13 +422,19 @@ async function sendRequest(){
       },{onConflict:'founder_id,candidate_id'});
     }catch(e){console.error('Send error:',e);}
   }
+  // Store first candidate for alignment page
+  if(selectedCandidates.length>0) localStorage.setItem('coattic_alignment_candidate',selectedCandidates[0].id);
   document.getElementById('mainFlow').style.display='none';
   document.getElementById('sentPanel').style.display='block';
   const sr=document.getElementById('sentRecipients');
-  sr.innerHTML=selectedCandidates.map(c=>`
+  sr.innerHTML=selectedCandidates.map(cand=>`
     <div class="sent-r">
-      <div class="sent-r-av" style="background:${c.color}">${c.initials}</div>
-      <div class="sent-r-info"><div class="sent-r-name">${c.name}</div><div class="sent-r-status">Notified — awaiting response</div></div>
+      <div class="sent-r-av" style="background:${cand.color}">${cand.initials}</div>
+      <div class="sent-r-info">
+        <div class="sent-r-name">${cand.name}</div>
+        <div class="sent-r-status">Notified — awaiting response</div>
+      </div>
+      <a href="coattic-alignment.html?candidate=${cand.id}" style="font-size:12px;color:var(--black);font-weight:600;white-space:nowrap">View Result →</a>
     </div>
   `).join('');
   window.scrollTo({top:0,behavior:'smooth'});
