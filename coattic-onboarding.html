@@ -560,14 +560,15 @@ const SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 const S={role:localStorage.getItem('coattic_role')||null,ambition:null,answers:{},strategicAnswers:{},natureAnswers:{},readinessAnswers:{}};
 
-// Pre-load existing profile so editing doesn't wipe saved data
-(async()=>{
+// Pre-load existing profile — fills S AND pre-populates DOM inputs
+async function loadExistingProfile(){
   try{
     const {data:{session}}=await sb.auth.getSession();
     if(!session) return;
     const {data:p}=await sb.from('profiles').select('*').eq('id',session.user.id).single();
     if(!p) return;
-    // Merge existing values into S — only fill nulls so user choices take precedence
+
+    // Fill S
     if(p.role&&!S.role){S.role=p.role;localStorage.setItem('coattic_role',p.role);}
     if(p.ambition) S.ambition=p.ambition;
     if(p.industry) S.industry=p.industry;
@@ -590,11 +591,53 @@ const S={role:localStorage.getItem('coattic_role')||null,ambition:null,answers:{
     if(p.answers&&Object.keys(p.answers).length) S.answers=p.answers;
     if(p.name) localStorage.setItem('coattic_name',p.name);
     if(p.email) localStorage.setItem('coattic_email',p.email);
-    // Also preserve approved status — pass it through on save
     S._approved=p.approved||false;
     S._existingScore=p.score||null;
-  }catch(e){}
-})();
+
+    // Pre-fill DOM inputs so collectStep always has current values
+    const set=(id,val)=>{const el=document.getElementById(id);if(el&&val)el.value=val;};
+    set('ventureName', p.venture_name||'');
+    set('ventureIndustry', p.industry||'');
+    set('ventureStage', p.stage||'');
+    set('ventureWebsite', p.website||'');
+    set('visionStatement', p.idea||'');
+    if(p.idea) document.getElementById('visionCount')&&(document.getElementById('visionCount').textContent=p.idea.split(/\s+/).filter(Boolean).length);
+    set('bgExpertise', p.expertise||'');
+    set('bgYears', p.years_exp||'');
+    set('bgStartup', p.startup_exp||'');
+    set('bgStatus', p.current_status||'');
+    set('bgAvailability', p.availability||'');
+    set('bgWork', p.work_mode||'');
+    set('bgHeadline', p.headline||'');
+    set('invTicket', p.ticket_size||'');
+    set('invSector', p.sector_focus||'');
+
+    // Pre-select role card
+    if(p.role){
+      document.querySelectorAll('.role-card').forEach(c=>{
+        if(c.dataset.role===p.role){c.classList.add('sel');const ch=c.querySelector('.role-check');if(ch)ch.textContent='✓';}
+      });
+      document.getElementById('nextRole')&&(document.getElementById('nextRole').disabled=false);
+    }
+    // Pre-select ambition
+    if(p.ambition){
+      document.querySelectorAll('.amb-opt').forEach(o=>{
+        if(o.dataset.val===p.ambition){o.classList.add('sel');}
+      });
+      document.getElementById('nextAmbition')&&(document.getElementById('nextAmbition').disabled=false);
+    }
+
+    // Geography
+    if(p.geography){
+      const parts=p.geography.split(', ');
+      if(parts.length>=2){set('ventureCity',parts[0]);set('ventureCountry',parts[1]);}
+      set('ventureGeo', p.geography);
+    }
+
+  }catch(e){console.error('Profile pre-load failed:',e);}
+}
+
+loadExistingProfile();
 
 // Step flows per role
 const FLOWS={
@@ -849,6 +892,14 @@ function buildCompletion(){
   saveProfileToSupabase({...S,score,readiness});
 }
 
+function showToast(msg, isError=false){
+  const t=document.createElement('div');
+  t.style.cssText=`position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:${isError?'#c0392b':'#0A0A0A'};color:white;padding:11px 20px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;z-index:9999;letter-spacing:.2px;white-space:nowrap`;
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),4000);
+}
+
 async function saveProfileToSupabase(profileData){
   try{
     const {data:{session}}=await sb.auth.getSession();
@@ -886,7 +937,12 @@ async function saveProfileToSupabase(profileData){
     };
 
     const {error}=await sb.from('profiles').upsert(payload,{onConflict:'id'});
-    if(error) console.error('Profile save error:',error.message);
+    if(error){
+      console.error('Profile save error:',error.message);
+      showToast('⚠️ Save failed: '+error.message, true);
+    } else {
+      showToast('✓ Profile saved successfully');
+    }
   }catch(e){
     console.error('Supabase save failed:',e);
   }
