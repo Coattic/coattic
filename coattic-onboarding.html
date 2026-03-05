@@ -625,12 +625,11 @@ function showStep(id){
 }
 
 function collectStep(from){
-  const val=id=>{const el=document.getElementById(id);return el&&el.value&&el.value.trim()?el.value.trim():null;};
+  const val=id=>{const el=document.getElementById(id);return(el&&el.value&&el.value.trim())?el.value.trim():null;};
   if(from==='venture'){
     S.venture_name=val('ventureName')||S.venture_name||null;
     S.industry=val('ventureIndustry')||S.industry||null;
     S.stage=val('ventureStage')||S.stage||null;
-    // Geography: use the hidden ventureGeo field (populated by updateGeo)
     S.geography=val('ventureGeo')||[val('ventureCity'),val('ventureCountry')].filter(Boolean).join(', ')||S.geography||null;
     S.website=val('ventureWebsite')||S.website||null;
     S.idea=val('visionStatement')||S.idea||null;
@@ -645,7 +644,6 @@ function collectStep(from){
     S.headline=val('bgHeadline')||S.headline||null;
   }
   if(from==='investor'){
-    // invStage is set via selectSingleOpt into S.answers['invStage']
     S.stage_focus=S.answers['invStage']||S.stage_focus||null;
     S.ticket_size=val('invTicket')||S.ticket_size||null;
     S.sector_focus=val('invSector')||S.sector_focus||null;
